@@ -9,26 +9,18 @@ from uuid import uuid4
 import immutables
 import pytz as pytz
 
+from .config import SPPLoggerConfig
+
 
 class SPPHandler(logging.StreamHandler):
     def __init__(
         self,
-        service: str,
-        component: str,
-        environment: str,
-        deployment: str,
-        user: str = None,
-        timezone: str = "UTC",
+        config: SPPLoggerConfig,
         context: immutables.Map = None,
         log_level: int = logging.INFO,
         stream: IO = sys.stdout,
     ) -> None:
-        self.service = service
-        self.component = component
-        self.environment = environment
-        self.deployment = deployment
-        self.user = user
-        self.timezone = timezone
+        self.config = config
         super().__init__(stream=stream)
         if context is None:
             context = immutables.Map(
@@ -42,22 +34,22 @@ class SPPHandler(logging.StreamHandler):
             "log_level": record.levelname,
             "timestamp": self.get_timestamp(record),
             "description": record.getMessage(),
-            "service": self.service,
-            "component": self.component,
-            "environment": self.environment,
-            "deployment": self.deployment,
+            "service": self.config.service,
+            "component": self.config.component,
+            "environment": self.config.environment,
+            "deployment": self.config.deployment,
             "user": self.get_user(),
         }
         return json.dumps({**log_message, **self.context})
 
     def get_timestamp(self, record: logging.LogRecord) -> str:
-        tz = pytz.timezone(self.timezone)
+        tz = pytz.timezone(self.config.timezone)
         return datetime.fromtimestamp(record.created, tz).isoformat()
 
     def get_user(self) -> str:
-        if self.user is None:
-            self.user = getpass.getuser()
-        return self.user
+        if self.config.user is None:
+            self.config.user = getpass.getuser()
+        return self.config.user
 
     def set_context_attribute(self, attribute_name, attribute_value):
         if attribute_name in self.context:

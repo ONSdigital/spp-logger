@@ -50,7 +50,7 @@ def test_get_user(spp_handler):
 @mock.patch("getpass.getuser")
 def test_get_user_dynamic(mock_get_user, spp_handler):
     mock_get_user.return_value = "my_test_user"
-    spp_handler.user = None
+    spp_handler.config.user = None
     assert spp_handler.get_user() == "my_test_user"
     spp_handler.get_user()
     spp_handler.get_user()
@@ -59,7 +59,7 @@ def test_get_user_dynamic(mock_get_user, spp_handler):
 
 def test_context_is_immutable(default_handler_config, log_stream):
     log_handler = SPPHandler(
-        **default_handler_config,
+        config=default_handler_config,
         context=immutables.Map(
             log_correlation_id=str(uuid4()), log_level_conf="WARNING"
         ),

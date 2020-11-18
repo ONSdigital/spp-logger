@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-from spp_logger import SPPHandler, SPPLogger
+from spp_logger import SPPHandler, SPPLogger, SPPLoggerConfig
 
 
 @pytest.fixture
@@ -13,20 +13,20 @@ def log_stream():
 
 @pytest.fixture
 def default_handler_config():
-    return {
-        "service": "test-service",
-        "component": "test-component",
-        "environment": "dev",
-        "deployment": "test-deployment",
-        "user": "test-user",
-    }
+    return SPPLoggerConfig(
+        service="test-service",
+        component="test-component",
+        environment="dev",
+        deployment="test-deployment",
+        user="test-user",
+    )
 
 
 @pytest.fixture
 def spp_logger(log_stream, default_handler_config):
     return SPPLogger(
         name="test-logger",
-        **default_handler_config,
+        config=default_handler_config,
         stream=log_stream,
     )
 
@@ -34,7 +34,7 @@ def spp_logger(log_stream, default_handler_config):
 @pytest.fixture
 def spp_handler(log_stream, default_handler_config):
     return SPPHandler(
-        **default_handler_config,
+        config=default_handler_config,
         stream=log_stream,
     )
 
