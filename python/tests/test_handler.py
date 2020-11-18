@@ -88,5 +88,5 @@ def test_set_context_attribute_update(spp_handler):
         spp_handler.set_context_attribute("log_level_conf", "DEBUG")
     assert (
         str(err.value)
-        == "Context attributes are immutable, could not override 'log_level'"
+        == "Context attributes are immutable, could not override 'log_level_conf'"
     )

@@ -59,6 +59,11 @@ class SPPHandler(logging.StreamHandler):
             self.user = getpass.getuser()
         return self.user
 
+    def set_context_attribute(self, attribute_name, attribute_value):
+        if attribute_name in self.context:
+            raise ImmutableContextError(attribute_name)
+        self.context = self.context.set(attribute_name, attribute_value)
+
 
 class ImmutableContextError(Exception):
     def __init__(self, attribute_name: str) -> None:
