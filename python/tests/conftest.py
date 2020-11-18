@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-from spp_logger.handler import SPPHandler
+from spp_logger.handler import SPPHandler, SPPLogger
 
 
 @pytest.fixture
@@ -20,6 +20,15 @@ def default_handler_config():
         "deployment": "test-deployment",
         "user": "test-user",
     }
+
+
+@pytest.fixture
+def spp_logger(log_stream, default_handler_config):
+    return SPPLogger(
+        name="test-logger",
+        **default_handler_config,
+        stream=log_stream,
+    )
 
 
 @pytest.fixture
