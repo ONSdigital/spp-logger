@@ -1,7 +1,8 @@
-import logging
 from unittest import mock
 from uuid import uuid4
 
+import immutables
+import pytest
 from freezegun import freeze_time
 from helpers import is_json, is_valid_uuid, parse_log_lines
 
@@ -59,9 +60,15 @@ def test_get_user_dynamic(mock_get_user, spp_handler):
 def test_context_is_immutable(default_handler_config, log_stream):
     log_handler = SPPHandler(
         **default_handler_config,
-        context=dict(log_correlation_id=str(uuid4()), log_level_conf="WARNING"),
+        context=immutables.Map(
+            log_correlation_id=str(uuid4()), log_level_conf="WARNING"
+        ),
         stream=log_stream,
     )
     assert log_handler.context["log_level_conf"] == "WARNING"
-    log_handler.context["log_level_conf"] = "foobar"
-    assert log_handler.context["log_level_conf"] == "WARNING"
+    with pytest.raises(Exception) as err:
+        log_handler.context["log_level_conf"] = "foobar"
+    assert (
+        str(err.value)
+        == "'immutables._map.Map' object does not support item assignment"
+    )

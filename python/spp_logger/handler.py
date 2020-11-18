@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import IO
 from uuid import uuid4
 
+import immutables
 import pytz as pytz
 
 
@@ -18,7 +19,7 @@ class SPPHandler(logging.StreamHandler):
         deployment: str,
         user: str = None,
         timezone: str = "UTC",
-        context: dict = None,
+        context: immutables.Map = None,
         log_level: int = logging.INFO,
         stream: IO = sys.stdout,
     ) -> None:
@@ -30,7 +31,7 @@ class SPPHandler(logging.StreamHandler):
         self.timezone = timezone
         super().__init__(stream=stream)
         if context is None:
-            context = dict(
+            context = immutables.Map(
                 log_correlation_id=str(uuid4()),
                 log_level_conf=logging.getLevelName(log_level),
             )
