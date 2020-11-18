@@ -36,3 +36,18 @@ def logger(spp_handler):
     logs.addHandler(spp_handler)
     logs.setLevel(logging.DEBUG)
     return logs
+
+
+@pytest.fixture
+def log_record():
+    record = logging.LogRecord(
+        name="test",
+        level="INFO",
+        pathname="pathname",
+        lineno=1,
+        msg="test",
+        args=None,
+        exc_info=None,
+    )
+    record.created = 1605225600
+    return record
