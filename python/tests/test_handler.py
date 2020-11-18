@@ -1,7 +1,7 @@
 from unittest import mock
 
 from freezegun import freeze_time
-from helpers import is_json, parse_log_lines
+from helpers import is_json, is_valid_uuid, parse_log_lines
 
 
 @freeze_time("2020-11-13")
@@ -13,7 +13,7 @@ def test_handler_logs(logger, log_stream):
     ), f"Expected log lines to be JSON but was: '{log_line}'"
     log_messages = parse_log_lines(log_stream.getvalue())
     assert len(log_messages) == 1
-    assert len(log_messages[0]) == 8
+    assert len(log_messages[0]) == 10
     assert log_messages[0]["log_level"] == "INFO"
     assert log_messages[0]["timestamp"] == "2020-11-13T00:00:00+00:00"
     assert log_messages[0]["description"] == "my info log message"
@@ -22,6 +22,8 @@ def test_handler_logs(logger, log_stream):
     assert log_messages[0]["environment"] == "dev"
     assert log_messages[0]["deployment"] == "test-deployment"
     assert log_messages[0]["user"] == "test-user"
+    assert log_messages[0]["log_level_conf"] == "INFO"
+    assert is_valid_uuid(log_messages[0]["log_correlation_id"])
 
 
 def test_handler_multiline_logs(logger, log_stream):
