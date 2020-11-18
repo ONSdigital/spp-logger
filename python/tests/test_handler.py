@@ -1,8 +1,7 @@
-import getpass
 from unittest import mock
 
 from freezegun import freeze_time
-from helpers import is_json, is_valid_uuid, parse_log_lines
+from helpers import is_json, parse_log_lines
 
 
 @freeze_time("2020-11-13")
@@ -24,12 +23,22 @@ def test_handler_logs(logger, log_stream):
     assert log_messages[0]["deployment"] == "test-deployment"
     assert log_messages[0]["user"] == "test-user"
 
+
+def test_handler_multiline_logs(logger, log_stream):
+    logger.info("my info log message\nwith an extra line")
+    logger.info("a second log message")
+    log_messages = parse_log_lines(log_stream.getvalue())
+    assert log_messages[0]["description"] == "my info log message\nwith an extra line"
+    assert log_messages[1]["description"] == "a second log message"
+
+
 def test_get_timestamp(spp_handler, log_record):
     assert spp_handler.get_timestamp(log_record) == "2020-11-13T00:00:00+00:00"
 
 
 def test_get_user(spp_handler):
     assert spp_handler.get_user() == "test-user"
+
 
 @mock.patch("getpass.getuser")
 def test_get_user_dynamic(mock_get_user, spp_handler):

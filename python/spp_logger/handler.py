@@ -1,7 +1,7 @@
+import getpass
 import json
 import logging
 import sys
-import getpass
 from datetime import datetime
 from typing import IO
 
