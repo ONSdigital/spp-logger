@@ -4,6 +4,7 @@ import logging
 import sys
 from datetime import datetime
 from typing import IO
+from uuid import uuid4
 
 import pytz as pytz
 
@@ -17,6 +18,8 @@ class SPPHandler(logging.StreamHandler):
         deployment: str,
         user: str = None,
         timezone: str = "UTC",
+        context: dict = None,
+        log_level: int = logging.INFO,
         stream: IO = sys.stdout,
     ) -> None:
         self.service = service
@@ -26,6 +29,12 @@ class SPPHandler(logging.StreamHandler):
         self.user = user
         self.timezone = timezone
         super().__init__(stream=stream)
+        if context is None:
+            context = dict(
+                log_correlation_id=str(uuid4()),
+                log_level_conf=logging.getLevelName(log_level),
+            )
+        self.context = context
 
     def format(self, record: logging.LogRecord) -> str:
         log_message = {
@@ -38,7 +47,7 @@ class SPPHandler(logging.StreamHandler):
             "deployment": self.deployment,
             "user": self.get_user(),
         }
-        return json.dumps(log_message)
+        return json.dumps({**log_message, **self.context})
 
     def get_timestamp(self, record: logging.LogRecord) -> str:
         tz = pytz.timezone(self.timezone)
