@@ -58,3 +58,15 @@ class SPPHandler(logging.StreamHandler):
         if self.user is None:
             self.user = getpass.getuser()
         return self.user
+
+
+class ImmutableContextError(Exception):
+    def __init__(self, attribute_name: str) -> None:
+        self.attribute_name = attribute_name
+        super().__init__()
+
+    def __str__(self) -> str:
+        return (
+            "Context attributes are immutable, could not override "
+            + f"'{self.attribute_name}'"
+        )

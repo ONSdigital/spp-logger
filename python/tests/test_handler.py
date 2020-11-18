@@ -6,7 +6,7 @@ import pytest
 from freezegun import freeze_time
 from helpers import is_json, is_valid_uuid, parse_log_lines
 
-from spp_logger import SPPHandler
+from spp_logger import ImmutableContextError, SPPHandler
 
 
 @freeze_time("2020-11-13")
@@ -71,4 +71,22 @@ def test_context_is_immutable(default_handler_config, log_stream):
     assert (
         str(err.value)
         == "'immutables._map.Map' object does not support item assignment"
+    )
+
+
+def test_set_context_attribute(logger, spp_handler, log_stream):
+    spp_handler.set_context_attribute("my_attribute", "my_attribute_value")
+    assert spp_handler.context.get("my_attribute") == "my_attribute_value"
+    logger.info("my info log message")
+    log_messages = parse_log_lines(log_stream.getvalue())
+    assert len(log_messages[0]) == 11
+    assert log_messages[0]["my_attribute"] == "my_attribute_value"
+
+
+def test_set_context_attribute_update(spp_handler):
+    with pytest.raises(ImmutableContextError) as err:
+        spp_handler.set_context_attribute("log_level_conf", "DEBUG")
+    assert (
+        str(err.value)
+        == "Context attributes are immutable, could not override 'log_level'"
     )
