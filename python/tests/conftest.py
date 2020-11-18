@@ -3,7 +3,7 @@ from io import StringIO
 
 import pytest
 
-from spp_logger.handler import SPPHandler, SPPLogger
+from spp_logger import SPPHandler, SPPLogger
 
 
 @pytest.fixture
