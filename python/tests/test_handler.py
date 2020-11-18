@@ -1,7 +1,11 @@
+import logging
 from unittest import mock
+from uuid import uuid4
 
 from freezegun import freeze_time
 from helpers import is_json, is_valid_uuid, parse_log_lines
+
+from spp_logger import SPPHandler
 
 
 @freeze_time("2020-11-13")
@@ -50,3 +54,14 @@ def test_get_user_dynamic(mock_get_user, spp_handler):
     spp_handler.get_user()
     spp_handler.get_user()
     mock_get_user.assert_called_once()
+
+
+def test_context_is_immutable(default_handler_config, log_stream):
+    log_handler = SPPHandler(
+        **default_handler_config,
+        context=dict(log_correlation_id=str(uuid4()), log_level_conf="WARNING"),
+        stream=log_stream,
+    )
+    assert log_handler.context["log_level_conf"] == "WARNING"
+    log_handler.context["log_level_conf"] = "foobar"
+    assert log_handler.context["log_level_conf"] == "WARNING"
