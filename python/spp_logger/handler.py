@@ -27,7 +27,7 @@ class SPPHandler(logging.StreamHandler):
                 log_correlation_id=str(uuid4()),
                 log_level_conf=logging.getLevelName(log_level),
             )
-        self.context = context
+        self._context = self.set_context(context)
 
     def format(self, record: logging.LogRecord) -> str:
         log_message = {
@@ -52,10 +52,17 @@ class SPPHandler(logging.StreamHandler):
         return self.config.user
 
     def set_context_attribute(self, attribute_name, attribute_value):
-        if attribute_name in self.context:
+        if attribute_name in self._context:
             raise ImmutableContextError.attribute_error(attribute_name)
-        self.context = self.context.set(attribute_name, attribute_value)
+        self._context = self._context.set(attribute_name, attribute_value)
 
+    @property
+    def context(self) -> str:
+        return self._context
+
+    def set_context(self, context: immutables.Map) -> immutables.Map:
+        self._context = context
+        return self._context
 
 class ImmutableContextError(Exception):
     pass

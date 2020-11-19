@@ -22,13 +22,13 @@ def test_logger_set_context_attribute(spp_logger, log_stream):
 
 
 def test_context_can_be_overridden(spp_logger, log_stream):
-    spp_logger.context = immutables.Map(
+    spp_logger.set_context(immutables.Map(
         log_correlation_id="test", log_level_conf="DEBUG"
-    )
+    ))
     spp_logger.info("my first log message")
-    spp_logger.context = immutables.Map(
+    spp_logger.set_context(immutables.Map(
         log_correlation_id="other test", log_level_conf="INFO"
-    )
+    ))
     spp_logger.info("my second log message")
     log_messages = parse_log_lines(log_stream.getvalue())
     assert log_messages[0]["log_correlation_id"] == "test"
