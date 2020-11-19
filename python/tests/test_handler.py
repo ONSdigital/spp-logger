@@ -14,6 +14,7 @@ from spp_logger import ImmutableContextError, SPPHandler
 def test_handler_logs(logger, log_stream):
     logger.info("my info log message")
     log_line = log_stream.getvalue()
+
     assert (
         is_json(log_line) is True
     ), f"Expected log lines to be JSON but was: '{log_line}'"
@@ -62,11 +63,11 @@ def test_context_is_immutable(default_handler_config, log_stream):
     log_handler = SPPHandler(
         config=default_handler_config,
         context=immutables.Map(
-            log_correlation_id=str(uuid4()), log_level_conf="WARNING"
+            log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING
         ),
         stream=log_stream,
     )
-    assert log_handler.context["log_level_conf"] == "WARNING"
+    assert log_handler.context["log_level_conf"] == logging.WARNING
     with pytest.raises(Exception) as err:
         log_handler.context["log_level_conf"] = "foobar"
     assert (
@@ -77,11 +78,11 @@ def test_context_is_immutable(default_handler_config, log_stream):
 
 def test_context_can_be_overridden(logger, spp_handler, log_stream):
     spp_handler.set_context(immutables.Map(
-        log_correlation_id="test", log_level_conf="DEBUG"
+        log_correlation_id="test", log_level_conf=logging.DEBUG
     ))
     logger.info("my first log message")
     spp_handler.set_context(immutables.Map(
-        log_correlation_id="other test", log_level_conf="INFO"
+        log_correlation_id="other test", log_level_conf=logging.INFO
     ))
     logger.info("my second log message")
     log_messages = parse_log_lines(log_stream.getvalue())
@@ -111,7 +112,7 @@ def test_set_context_attribute_update(spp_handler):
 
 def test_log_level_set_by_context(spp_handler, log_stream):
     spp_handler.set_context(immutables.Map(
-        log_correlation_id="TEST", log_level_conf="ERROR"
+        log_correlation_id="TEST", log_level_conf=logging.ERROR
     ))
     logger = logging.getLogger("test_log_level_set_by_context")
     logger.addHandler(spp_handler)
@@ -123,16 +124,16 @@ def test_log_level_set_by_context(spp_handler, log_stream):
     log_messages = parse_log_lines(log_stream.getvalue())
     assert len(log_messages) == 2
     assert log_messages[0]["log_level"] == "CRITICAL"
-    assert log_messages[0]["configured_log_level"] == "ERROR"
+    assert log_messages[0]["log_level_conf"] == "ERROR"
     assert log_messages[1]["log_level"] == "ERROR"
-    assert log_messages[1]["configured_log_level"] == "ERROR"
+    assert log_messages[1]["log_level_conf"] == "ERROR"
 
 
 def test_context_must_be_immutable(default_handler_config):
     with pytest.raises(ImmutableContextError) as err:
         SPPHandler(
             config=default_handler_config,
-            context=dict(log_correlation_id=str(uuid4()), log_level_conf="WARNING"),
+            context=dict(log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING),
         )
     assert str(err.value) == "Context must be a type of 'immutables.Map'"
 
@@ -140,6 +141,6 @@ def test_context_must_be_immutable(default_handler_config):
 def test_context_must_be_immutable_when_overridden(spp_handler):
     with pytest.raises(ImmutableContextError) as err:
         spp_handler.set_context(dict(
-            log_correlation_id=str(uuid4()), log_level_conf="WARNING"
+            log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING
         ))
     assert str(err.value) == "Context must be a type of 'immutables.Map'"

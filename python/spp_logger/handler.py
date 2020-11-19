@@ -25,9 +25,10 @@ class SPPHandler(logging.StreamHandler):
         if context is None:
             context = immutables.Map(
                 log_correlation_id=str(uuid4()),
-                log_level_conf=logging.getLevelName(log_level),
+                log_level_conf=log_level,
             )
         self._context = self.set_context(context)
+        self.level = self._context.get("log_level_conf")
 
     def format(self, record: logging.LogRecord) -> str:
         log_message = {
@@ -40,7 +41,7 @@ class SPPHandler(logging.StreamHandler):
             "deployment": self.config.deployment,
             "user": self.get_user(),
         }
-        return json.dumps({**log_message, **self.context})
+        return json.dumps({**log_message, **self.context, "log_level_conf": logging.getLevelName(self.level)})
 
     def get_timestamp(self, record: logging.LogRecord) -> str:
         tz = pytz.timezone(self.config.timezone)
@@ -61,8 +62,12 @@ class SPPHandler(logging.StreamHandler):
         return self._context
 
     def set_context(self, context: immutables.Map) -> immutables.Map:
+        if type(context) is not immutables.Map:
+            raise ImmutableContextError("Context must be a type of 'immutables.Map'")
         self._context = context
+        self.level = self._context.get("log_level_conf")
         return self._context
+
 
 class ImmutableContextError(Exception):
     pass

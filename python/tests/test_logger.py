@@ -1,5 +1,6 @@
 import immutables
 from helpers import parse_log_lines
+import logging
 
 
 def test_logger(spp_logger, log_stream):
@@ -23,11 +24,11 @@ def test_logger_set_context_attribute(spp_logger, log_stream):
 
 def test_context_can_be_overridden(spp_logger, log_stream):
     spp_logger.set_context(immutables.Map(
-        log_correlation_id="test", log_level_conf="DEBUG"
+        log_correlation_id="test", log_level_conf=logging.DEBUG
     ))
     spp_logger.info("my first log message")
     spp_logger.set_context(immutables.Map(
-        log_correlation_id="other test", log_level_conf="INFO"
+        log_correlation_id="other test", log_level_conf=logging.INFO
     ))
     spp_logger.info("my second log message")
     log_messages = parse_log_lines(log_stream.getvalue())

@@ -1,5 +1,6 @@
 import logging
 import sys
+import immutables
 from typing import IO
 
 from .config import SPPLoggerConfig
@@ -18,4 +19,11 @@ class SPPLogger(logging.Logger):
             config=config,
             stream=stream,
         )
+        self.spp_handler = handler
         self.handlers = [handler]
+
+    def set_context_attribute(self, attribute_name, attribute_value):
+        self.spp_handler.set_context_attribute(attribute_name, attribute_value)
+
+    def set_context(self, context: immutables.Map) -> immutables.Map:
+        return self.spp_handler.set_context(context)
