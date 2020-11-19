@@ -7,7 +7,7 @@ import pytest
 from freezegun import freeze_time
 from helpers import is_json, is_valid_uuid, parse_log_lines
 
-from spp_logger import ImmutableContextError, SPPHandler, ContextError
+from spp_logger import ContextError, ImmutableContextError, SPPHandler
 
 
 @freeze_time("2020-11-13")
