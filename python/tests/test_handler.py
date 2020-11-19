@@ -153,3 +153,27 @@ def test_context_has_required_attributes(spp_handler):
         str(err.value)
         == "Context must contain required arguments: log_correlation_id, log_level"
     )
+
+
+def test_context_can_be_temporarily_overridden(logger, spp_handler, log_stream):
+    spp_handler.set_context(
+        immutables.Map(
+            log_correlation_id="default_correlation_id",
+            log_level=logging.INFO,
+        )
+    )
+    logger.info("my info log message")
+    logger.debug("a debug message")
+    with spp_handler.override_context(
+        immutables.Map(
+            log_correlation_id="override_correlation_id",
+            log_level=logging.DEBUG,
+        )
+    ):
+        logger.debug("my overridden debug")
+    log_messages = parse_log_lines(log_stream.getvalue())
+    assert len(log_messages) == 2
+    assert log_messages[0]["log_correlation_id"] == "default_correlation_id"
+    assert log_messages[0]["description"] == "my info log message"
+    assert log_messages[1]["log_correlation_id"] == "override_correlation_id"
+    assert log_messages[1]["description"] == "my overridden debug"

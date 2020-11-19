@@ -37,3 +37,27 @@ def test_context_can_be_overridden(spp_logger, log_stream):
     assert log_messages[0]["log_level_conf"] == "DEBUG"
     assert log_messages[1]["log_correlation_id"] == "other test"
     assert log_messages[1]["log_level_conf"] == "INFO"
+
+
+def test_context_can_be_temporarily_overridden(spp_logger, log_stream):
+    spp_logger.set_context(
+        immutables.Map(
+            log_correlation_id="default_correlation_id",
+            log_level=logging.INFO,
+        )
+    )
+    spp_logger.info("my info log message")
+    spp_logger.debug("a debug message")
+    with spp_logger.override_context(
+        immutables.Map(
+            log_correlation_id="override_correlation_id",
+            log_level=logging.DEBUG,
+        )
+    ):
+        spp_logger.debug("my overridden debug")
+    log_messages = parse_log_lines(log_stream.getvalue())
+    assert len(log_messages) == 2
+    assert log_messages[0]["log_correlation_id"] == "default_correlation_id"
+    assert log_messages[0]["description"] == "my info log message"
+    assert log_messages[1]["log_correlation_id"] == "override_correlation_id"
+    assert log_messages[1]["description"] == "my overridden debug"

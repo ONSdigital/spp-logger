@@ -2,8 +2,9 @@ import getpass
 import json
 import logging
 import sys
+from contextlib import contextmanager
 from datetime import datetime
-from typing import IO
+from typing import IO, Iterator
 from uuid import uuid4
 
 import immutables
@@ -77,6 +78,15 @@ class SPPHandler(logging.StreamHandler):
         self._context = context
         self.level = self.context.get("log_level")
         return self.context
+
+    @contextmanager
+    def override_context(self, context: immutables.Map) -> Iterator[None]:
+        main_context = self.context
+        try:
+            self.set_context(context)
+            yield
+        finally:
+            self.set_context(main_context)
 
 
 class ImmutableContextError(Exception):

@@ -1,6 +1,7 @@
 import logging
 import sys
-from typing import IO
+from contextlib import contextmanager
+from typing import IO, Iterator
 
 import immutables
 
@@ -28,3 +29,16 @@ class SPPLogger(logging.Logger):
 
     def set_context(self, context: immutables.Map) -> immutables.Map:
         return self.spp_handler.set_context(context)
+
+    @property
+    def context(self) -> immutables.Map:
+        return self.spp_handler.context
+
+    @contextmanager
+    def override_context(self, context: immutables.Map) -> Iterator[None]:
+        main_context = self.context
+        try:
+            self.set_context(context)
+            yield
+        finally:
+            self.set_context(main_context)
