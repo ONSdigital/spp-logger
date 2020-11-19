@@ -77,13 +77,13 @@ def test_context_is_immutable(default_handler_config, log_stream):
 
 
 def test_context_can_be_overridden(logger, spp_handler, log_stream):
-    spp_handler.set_context(immutables.Map(
-        log_correlation_id="test", log_level_conf=logging.DEBUG
-    ))
+    spp_handler.set_context(
+        immutables.Map(log_correlation_id="test", log_level_conf=logging.DEBUG)
+    )
     logger.info("my first log message")
-    spp_handler.set_context(immutables.Map(
-        log_correlation_id="other test", log_level_conf=logging.INFO
-    ))
+    spp_handler.set_context(
+        immutables.Map(log_correlation_id="other test", log_level_conf=logging.INFO)
+    )
     logger.info("my second log message")
     log_messages = parse_log_lines(log_stream.getvalue())
     assert log_messages[0]["log_correlation_id"] == "test"
@@ -111,9 +111,9 @@ def test_set_context_attribute_update(spp_handler):
 
 
 def test_log_level_set_by_context(spp_handler, log_stream):
-    spp_handler.set_context(immutables.Map(
-        log_correlation_id="TEST", log_level_conf=logging.ERROR
-    ))
+    spp_handler.set_context(
+        immutables.Map(log_correlation_id="TEST", log_level_conf=logging.ERROR)
+    )
     logger = logging.getLogger("test_log_level_set_by_context")
     logger.addHandler(spp_handler)
     logger.info("my info log message")
@@ -133,14 +133,16 @@ def test_context_must_be_immutable(default_handler_config):
     with pytest.raises(ImmutableContextError) as err:
         SPPHandler(
             config=default_handler_config,
-            context=dict(log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING),
+            context=dict(
+                log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING
+            ),
         )
     assert str(err.value) == "Context must be a type of 'immutables.Map'"
 
 
 def test_context_must_be_immutable_when_overridden(spp_handler):
     with pytest.raises(ImmutableContextError) as err:
-        spp_handler.set_context(dict(
-            log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING
-        ))
+        spp_handler.set_context(
+            dict(log_correlation_id=str(uuid4()), log_level_conf=logging.WARNING)
+        )
     assert str(err.value) == "Context must be a type of 'immutables.Map'"

@@ -41,7 +41,13 @@ class SPPHandler(logging.StreamHandler):
             "deployment": self.config.deployment,
             "user": self.get_user(),
         }
-        return json.dumps({**log_message, **self.context, "log_level_conf": logging.getLevelName(self.level)})
+        return json.dumps(
+            {
+                **log_message,
+                **self.context,
+                "log_level_conf": logging.getLevelName(self.level),
+            }
+        )
 
     def get_timestamp(self, record: logging.LogRecord) -> str:
         tz = pytz.timezone(self.config.timezone)
@@ -52,13 +58,13 @@ class SPPHandler(logging.StreamHandler):
             self.config.user = getpass.getuser()
         return self.config.user
 
-    def set_context_attribute(self, attribute_name, attribute_value):
+    def set_context_attribute(self, attribute_name: str, attribute_value: str) -> None:
         if attribute_name in self._context:
             raise ImmutableContextError.attribute_error(attribute_name)
         self._context = self._context.set(attribute_name, attribute_value)
 
     @property
-    def context(self) -> str:
+    def context(self) -> immutables.Map:
         return self._context
 
     def set_context(self, context: immutables.Map) -> immutables.Map:
