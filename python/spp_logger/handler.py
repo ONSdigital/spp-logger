@@ -25,10 +25,10 @@ class SPPHandler(logging.StreamHandler):
         if context is None:
             context = immutables.Map(
                 log_correlation_id=str(uuid4()),
-                log_level_conf=log_level,
+                log_level=log_level,
             )
         self._context = self.set_context(context)
-        self.level = self._context.get("log_level_conf")
+        self.level = self._context.get("log_level")
 
     def format(self, record: logging.LogRecord) -> str:
         log_message = {
@@ -44,7 +44,7 @@ class SPPHandler(logging.StreamHandler):
         return json.dumps(
             {
                 **log_message,
-                **self.context,
+                **{k: self.context[k] for k in self.context if k not in ["log_level"]},
                 "log_level_conf": logging.getLevelName(self.level),
             }
         )
@@ -61,7 +61,7 @@ class SPPHandler(logging.StreamHandler):
     def set_context_attribute(self, attribute_name: str, attribute_value: str) -> None:
         if attribute_name in self._context:
             raise ImmutableContextError.attribute_error(attribute_name)
-        self._context = self._context.set(attribute_name, attribute_value)
+        self._context = self.context.set(attribute_name, attribute_value)
 
     @property
     def context(self) -> immutables.Map:
@@ -71,8 +71,8 @@ class SPPHandler(logging.StreamHandler):
         if type(context) is not immutables.Map:
             raise ImmutableContextError("Context must be a type of 'immutables.Map'")
         self._context = context
-        self.level = self._context.get("log_level_conf")
-        return self._context
+        self.level = self.context.get("log_level")
+        return self.context
 
 
 class ImmutableContextError(Exception):
