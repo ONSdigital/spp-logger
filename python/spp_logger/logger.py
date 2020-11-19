@@ -1,7 +1,7 @@
 import logging
 import sys
 from contextlib import contextmanager
-from typing import IO, Iterator
+from typing import IO, Iterator, Union
 
 import immutables
 
@@ -42,6 +42,13 @@ class SPPLogger(logging.Logger):
             yield
         finally:
             self.set_context(main_context)
+
+    def setLevel(self, level: Union[int, str]) -> None:
+        raise LogLevelException(
+            "SPPLogger does not support setting log level this way. "
+            + "Please set the log level using the 'log_level' attribute "
+            + "on your context"
+        )
 
 
 class LogLevelException(Exception):
