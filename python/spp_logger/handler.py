@@ -53,17 +53,16 @@ class SPPHandler(logging.StreamHandler):
 
     def set_context_attribute(self, attribute_name, attribute_value):
         if attribute_name in self.context:
-            raise ImmutableContextError(attribute_name)
+            raise ImmutableContextError.attribute_error(attribute_name)
         self.context = self.context.set(attribute_name, attribute_value)
 
 
 class ImmutableContextError(Exception):
-    def __init__(self, attribute_name: str) -> None:
-        self.attribute_name = attribute_name
-        super().__init__()
+    pass
 
-    def __str__(self) -> str:
-        return (
+    @classmethod
+    def attribute_error(cls, attribute_name: str) -> "ImmutableContextError":
+        return cls(
             "Context attributes are immutable, could not override "
-            + f"'{self.attribute_name}'"
+            + f"'{attribute_name}'"
         )
