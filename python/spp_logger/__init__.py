@@ -1,6 +1,6 @@
 from .config import SPPLoggerConfig
 from .handler import ContextError, ImmutableContextError, SPPHandler
-from .logger import SPPLogger
+from .logger import LogLevelException, SPPLogger
 
 __all__ = [
     "SPPHandler",
@@ -8,4 +8,5 @@ __all__ = [
     "SPPLoggerConfig",
     "ContextError",
     "ImmutableContextError",
+    "LogLevelException",
 ]

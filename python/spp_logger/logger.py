@@ -16,7 +16,7 @@ class SPPLogger(logging.Logger):
         config: SPPLoggerConfig,
         stream: IO = sys.stdout,
     ) -> None:
-        super().__init__(name)
+        super().__init__(name, logging.DEBUG)
         handler = SPPHandler(
             config=config,
             stream=stream,
@@ -42,3 +42,7 @@ class SPPLogger(logging.Logger):
             yield
         finally:
             self.set_context(main_context)
+
+
+class LogLevelException(Exception):
+    pass

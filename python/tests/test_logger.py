@@ -1,7 +1,10 @@
 import logging
 
 import immutables
+import pytest
 from helpers import parse_log_lines
+
+from spp_logger import LogLevelException
 
 
 def test_logger(spp_logger, log_stream):
@@ -61,3 +64,13 @@ def test_context_can_be_temporarily_overridden(spp_logger, log_stream):
     assert log_messages[0]["description"] == "my info log message"
     assert log_messages[1]["log_correlation_id"] == "override_correlation_id"
     assert log_messages[1]["description"] == "my overridden debug"
+
+
+def test_setLevel_disabled(spp_logger):
+    with pytest.raises(LogLevelException) as err:
+        spp_logger.setLevel(logging.WARNING)
+    assert str(err.value) == (
+        "SPPLogger does not support setting log level this way. "
+        + "Please set the log level using the 'log_level' attribute "
+        + "on your context"
+    )
