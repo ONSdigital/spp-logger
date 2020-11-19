@@ -1,5 +1,11 @@
 from .config import SPPLoggerConfig
-from .handler import ImmutableContextError, SPPHandler
+from .handler import ContextError, ImmutableContextError, SPPHandler
 from .logger import SPPLogger
 
-__all__ = ["SPPHandler", "SPPLogger", "SPPLoggerConfig", "ImmutableContextError"]
+__all__ = [
+    "SPPHandler",
+    "SPPLogger",
+    "SPPLoggerConfig",
+    "ContextError",
+    "ImmutableContextError",
+]

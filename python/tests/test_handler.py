@@ -7,7 +7,7 @@ import pytest
 from freezegun import freeze_time
 from helpers import is_json, is_valid_uuid, parse_log_lines
 
-from spp_logger import ImmutableContextError, SPPHandler
+from spp_logger import ImmutableContextError, SPPHandler, ContextError
 
 
 @freeze_time("2020-11-13")
@@ -144,3 +144,12 @@ def test_context_must_be_immutable_when_overridden(spp_handler):
             dict(log_correlation_id=str(uuid4()), log_level=logging.WARNING)
         )
     assert str(err.value) == "Context must be a type of 'immutables.Map'"
+
+
+def test_context_has_required_attributes(spp_handler):
+    with pytest.raises(ContextError) as err:
+        spp_handler.set_context(immutables.Map(my_var="test"))
+    assert (
+        str(err.value)
+        == "Context must contain required arguments: log_correlation_id, log_level"
+    )

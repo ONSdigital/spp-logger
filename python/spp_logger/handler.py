@@ -84,3 +84,7 @@ class ImmutableContextError(Exception):
             "Context attributes are immutable, could not override "
             + f"'{attribute_name}'"
         )
+
+
+class ContextError(Exception):
+    pass
