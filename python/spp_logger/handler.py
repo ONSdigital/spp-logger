@@ -26,6 +26,7 @@ class SPPHandler(logging.StreamHandler):
         if context is None:
             context = immutables.Map(
                 log_correlation_id=str(uuid4()),
+                log_correlation_type="AUTO",
                 log_level=log_level,
             )
         self._context = self.set_context(context)
@@ -71,9 +72,15 @@ class SPPHandler(logging.StreamHandler):
     def set_context(self, context: immutables.Map) -> immutables.Map:
         if type(context) is not immutables.Map:
             raise ImmutableContextError("Context must be a type of 'immutables.Map'")
-        if not all(key in context for key in ["log_level", "log_correlation_id"]):
+        if not all(
+            key in context
+            for key in ["log_level", "log_correlation_id", "log_correlation_type"]
+        ):
             raise ContextError(
-                "Context must contain required arguments: log_correlation_id, log_level"
+                "Context must contain required arguments: "
+                + "log_correlation_id, "
+                + "log_correlation_type, "
+                + "log_level"
             )
         self._context = context
         self.level = self.context.get("log_level")

@@ -10,8 +10,9 @@ A collection of logging libraries to implement standardised logging.
 
 ### Inter-process communication
 
-- Two compulsory attributes:
+- Three compulsory attributes:
     - **log_correlation_id** - This is the correlation value (based on GUID, but may have other details encoded into it)
+    - **log_correlation_type** - describes the type of correlation we are using e.g. workflow ID, survey ID etc. - THIS WAS ADDED 20/11/2020
     - **log_level** - standard python logging levels (Critical/Error/Warning/Info/Debug)
 - These attributes are:
     - defined by the initiating function/process.

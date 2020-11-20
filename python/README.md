@@ -47,26 +47,26 @@ config = SPPLoggerConfig.from_env()
 
 ### SPPLogger
 
-| Argument  | Type            | Default                                                                                                  |
-|-----------|-----------------|----------------------------------------------------------------------------------------------------------|
-| name      | str             | N/A                                                                                                      |
-| config    | SPPLoggerConfig | `UTC`                                                                                                    |
-| context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_level": log_level}` |
-| log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                         |
-| stream    | IO              | `sys.stdout`                                                                                             |
+| Argument  | Type            | Default                                                                                                                               |
+|-----------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| name      | str             | N/A                                                                                                                                   |
+| config    | SPPLoggerConfig | `UTC`                                                                                                                                 |
+| context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_correlation_type": type, log_level": log_level}` |
+| log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                                                      |
+| stream    | IO              | `sys.stdout`                                                                                                                          |
 
 ### SPPHandler
 
-| Argument  | Type            | Default                                                                                                  |
-|-----------|-----------------|----------------------------------------------------------------------------------------------------------|
-| config    | SPPLoggerConfig | `UTC`                                                                                                    |
-| context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_level": log_level}` |
-| log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                         |
-| stream    | IO              | `sys.stdout`                                                                                             |
+| Argument  | Type            | Default                                                                                                                               |
+|-----------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| config    | SPPLoggerConfig | `UTC`                                                                                                                                 |
+| context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_correlation_type": type, log_level": log_level}` |
+| log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                                                      |
+| stream    | IO              | `sys.stdout`                                                                                                                          |
 
 ### Context
 
-A context must be an immutable Map with the properties `log_correlation_id` and `log_level`.
+A context must be an immutable Map with the properties `log_correlation_id`, `log_correlation_type` and `log_level`.
 
 The intention of a context is that the initialising process will configure it and pass it down to any other
 initialisations. As a result of this logs can be correlated using the `log_correlation_id` and the `log_level`
