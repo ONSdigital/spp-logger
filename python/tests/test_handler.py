@@ -175,9 +175,9 @@ def test_context_has_required_attributes(spp_handler):
     assert (
         str(err.value)
         == "Context must contain required arguments: "
+        + "log_level, "
         + "log_correlation_id, "
-        + "log_correlation_type, "
-        + "log_level"
+        + "log_correlation_type"
     )
 
 

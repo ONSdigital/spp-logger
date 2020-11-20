@@ -12,6 +12,8 @@ import pytz as pytz
 
 from .config import SPPLoggerConfig
 
+CONTEXT_REQUIRED_FIELDS = ["log_level", "log_correlation_id", "log_correlation_type"]
+
 
 class SPPHandler(logging.StreamHandler):
     def __init__(
@@ -72,15 +74,10 @@ class SPPHandler(logging.StreamHandler):
     def set_context(self, context: immutables.Map) -> immutables.Map:
         if type(context) is not immutables.Map:
             raise ImmutableContextError("Context must be a type of 'immutables.Map'")
-        if not all(
-            key in context
-            for key in ["log_level", "log_correlation_id", "log_correlation_type"]
-        ):
+        if not all(key in context for key in CONTEXT_REQUIRED_FIELDS):
             raise ContextError(
                 "Context must contain required arguments: "
-                + "log_correlation_id, "
-                + "log_correlation_type, "
-                + "log_level"
+                + ", ".join(CONTEXT_REQUIRED_FIELDS)
             )
         self._context = context
         self.level = self.context.get("log_level")
