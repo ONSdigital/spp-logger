@@ -29,7 +29,7 @@ def test_handler_logs(logger, log_stream):
     assert log_messages[0]["environment"] == "dev"
     assert log_messages[0]["deployment"] == "test-deployment"
     assert log_messages[0]["user"] == "test-user"
-    assert log_messages[0]["log_level_conf"] == "INFO"
+    assert log_messages[0]["configured_log_level"] == "INFO"
     assert is_valid_uuid(log_messages[0]["log_correlation_id"])
 
 
@@ -87,9 +87,9 @@ def test_context_can_be_overridden(logger, spp_handler, log_stream):
     logger.info("my second log message")
     log_messages = parse_log_lines(log_stream.getvalue())
     assert log_messages[0]["log_correlation_id"] == "test"
-    assert log_messages[0]["log_level_conf"] == "DEBUG"
+    assert log_messages[0]["configured_log_level"] == "DEBUG"
     assert log_messages[1]["log_correlation_id"] == "other test"
-    assert log_messages[1]["log_level_conf"] == "INFO"
+    assert log_messages[1]["configured_log_level"] == "INFO"
 
 
 def test_set_context_attribute(logger, spp_handler, log_stream):
@@ -124,9 +124,9 @@ def test_log_level_set_by_context(spp_handler, log_stream):
     log_messages = parse_log_lines(log_stream.getvalue())
     assert len(log_messages) == 2
     assert log_messages[0]["log_level"] == "CRITICAL"
-    assert log_messages[0]["log_level_conf"] == "ERROR"
+    assert log_messages[0]["configured_log_level"] == "ERROR"
     assert log_messages[1]["log_level"] == "ERROR"
-    assert log_messages[1]["log_level_conf"] == "ERROR"
+    assert log_messages[1]["configured_log_level"] == "ERROR"
 
 
 def test_context_must_be_immutable(default_handler_config):

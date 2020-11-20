@@ -46,7 +46,7 @@ class SPPHandler(logging.StreamHandler):
             {
                 **log_message,
                 **{k: self.context[k] for k in self.context if k not in ["log_level"]},
-                "log_level_conf": logging.getLevelName(self.level),
+                "configured_log_level": logging.getLevelName(self.level),
             }
         )
 

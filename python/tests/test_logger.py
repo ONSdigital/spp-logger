@@ -37,9 +37,9 @@ def test_context_can_be_overridden(spp_logger, log_stream):
     spp_logger.info("my second log message")
     log_messages = parse_log_lines(log_stream.getvalue())
     assert log_messages[0]["log_correlation_id"] == "test"
-    assert log_messages[0]["log_level_conf"] == "DEBUG"
+    assert log_messages[0]["configured_log_level"] == "DEBUG"
     assert log_messages[1]["log_correlation_id"] == "other test"
-    assert log_messages[1]["log_level_conf"] == "INFO"
+    assert log_messages[1]["configured_log_level"] == "INFO"
 
 
 def test_context_can_be_temporarily_overridden(spp_logger, log_stream):
