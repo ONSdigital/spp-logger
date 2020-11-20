@@ -50,3 +50,9 @@ A collection of logging libraries to implement standardised logging.
         - (This allows us to 'test' the logging and correctly identify what should/shouldn't be handled earlier in the process. It will also often give us enough information to identify issues without having to switch all logging to debug level).
     - Should be determined dynamically unless impossible to do so. There should not be any infrastructure/deployment changes required to update this.
     - Behaviour is treated the same across all environments. i.e. the process for changing the log-level is the same (assuming permitted access, etc)
+
+##  CI
+
+```bash
+fly -t xcutting set-pipeline -c ci/pipeline.yml -p spp-logger
+```
