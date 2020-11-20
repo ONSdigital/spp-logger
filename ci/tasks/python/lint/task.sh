@@ -11,4 +11,4 @@ poetry install
 poetry run black --check .
 poetry run isort --check .
 poetry run flake8 --max-line-length=88 .
-poetry run mypy --config-file "${BASE_DIR}/lambda-git/.mypy.ini" .
+poetry run mypy --config-file .mypy.ini .
