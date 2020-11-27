@@ -10,10 +10,14 @@ sys.path.insert(0, str(MAIN_DIR))
 
 from spp_logger import SPPLogger, SPPLoggerConfig  # noqa: E402
 
-main_context = immutables.Map(log_correlation_id=str(uuid4()), log_correlation_type="AUTO", log_level=logging.INFO)
+main_context = immutables.Map(
+    log_correlation_id=str(uuid4()), log_correlation_type="AUTO", log_level=logging.INFO
+)
 
 secondary_context = immutables.Map(
-    log_correlation_id=str(uuid4()), log_correlation_type="AUTO",  log_level=logging.DEBUG
+    log_correlation_id=str(uuid4()),
+    log_correlation_type="AUTO",
+    log_level=logging.DEBUG,
 )
 
 config = SPPLoggerConfig(
