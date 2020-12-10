@@ -4,7 +4,7 @@ import logging
 import sys
 from contextlib import contextmanager
 from datetime import datetime
-from typing import IO, Iterator
+from typing import IO, Iterator, Union
 from uuid import uuid4
 
 import immutables
@@ -20,7 +20,7 @@ class SPPHandler(logging.StreamHandler):
         self,
         config: SPPLoggerConfig,
         context: immutables.Map = None,
-        log_level: int = logging.INFO,
+        log_level: Union[int, str] = logging.INFO,
         stream: IO = sys.stdout,
     ) -> None:
         self.config = config
@@ -29,7 +29,7 @@ class SPPHandler(logging.StreamHandler):
             context = immutables.Map(
                 log_correlation_id=str(uuid4()),
                 log_correlation_type="AUTO",
-                log_level=log_level,
+                log_level=self.log_level_int(log_level),
             )
         self._context = self.set_context(context)
         self.level = self._context.get("log_level")
@@ -48,8 +48,10 @@ class SPPHandler(logging.StreamHandler):
         return json.dumps(
             {
                 **log_message,
-                **{k: self.context[k] for k in self.context if k not in ["log_level"]},
-                "configured_log_level": logging.getLevelName(self.level),
+                **{
+                    k: self._context[k] for k in self._context if k not in ["log_level"]
+                },
+                "configured_log_level": self.format_log_level(self.level),
             }
         )
 
@@ -65,11 +67,13 @@ class SPPHandler(logging.StreamHandler):
     def set_context_attribute(self, attribute_name: str, attribute_value: str) -> None:
         if attribute_name in self._context:
             raise ImmutableContextError.attribute_error(attribute_name)
-        self._context = self.context.set(attribute_name, attribute_value)
+        self._context = self._context.set(attribute_name, attribute_value)
 
     @property
     def context(self) -> immutables.Map:
-        return self._context
+        return self._context.set(
+            "log_level", self.format_log_level(self._context["log_level"])
+        )
 
     def set_context(self, context: immutables.Map) -> immutables.Map:
         if type(context) is not immutables.Map:
@@ -79,18 +83,29 @@ class SPPHandler(logging.StreamHandler):
                 "Context must contain required arguments: "
                 + ", ".join(CONTEXT_REQUIRED_FIELDS)
             )
+        context = context.set("log_level", self.log_level_int(context["log_level"]))
         self._context = context
-        self.level = self.context.get("log_level")
-        return self.context
+        self.level = self._context.get("log_level")
+        return self._context
 
     @contextmanager
     def override_context(self, context: immutables.Map) -> Iterator[None]:
-        main_context = self.context
+        main_context = self._context
         try:
             self.set_context(context)
             yield
         finally:
             self.set_context(main_context)
+
+    def format_log_level(self, log_level: Union[int, str]) -> str:
+        if type(log_level) == int:
+            return logging.getLevelName(log_level)
+        return str(log_level)
+
+    def log_level_int(self, log_level: Union[int, str]) -> int:
+        if type(log_level) == str:
+            return logging.getLevelName(log_level)
+        return int(log_level)
 
 
 class ImmutableContextError(Exception):

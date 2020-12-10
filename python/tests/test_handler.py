@@ -70,7 +70,7 @@ def test_context_is_immutable(default_handler_config, log_stream):
         ),
         stream=log_stream,
     )
-    assert log_handler.context["log_level"] == logging.WARNING
+    assert log_handler.context["log_level"] == "WARNING"
     with pytest.raises(Exception) as err:
         log_handler.context["log_level"] = "foobar"
     assert (
@@ -205,3 +205,32 @@ def test_context_can_be_temporarily_overridden(logger, spp_handler, log_stream):
     assert log_messages[0]["description"] == "my info log message"
     assert log_messages[1]["log_correlation_id"] == "override_correlation_id"
     assert log_messages[1]["description"] == "my overridden debug"
+
+
+def test_format_log_level(spp_handler):
+    assert spp_handler.format_log_level("INFO") == "INFO"
+    assert spp_handler.format_log_level(20) == "INFO"
+
+
+def test_log_level_int(spp_handler):
+    assert spp_handler.log_level_int("INFO") == 20
+    assert spp_handler.log_level_int(20) == 20
+
+
+def test_context_log_level_is_always_string(spp_handler):
+    spp_handler.set_context(
+        immutables.Map(
+            log_correlation_id=str(uuid4()),
+            log_correlation_type="AUTO",
+            log_level=logging.WARNING,
+        )
+    )
+    assert spp_handler.context["log_level"] == "WARNING"
+    spp_handler.set_context(
+        immutables.Map(
+            log_correlation_id=str(uuid4()),
+            log_correlation_type="AUTO",
+            log_level="INFO",
+        )
+    )
+    assert spp_handler.context["log_level"] == "INFO"
