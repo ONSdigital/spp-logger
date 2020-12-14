@@ -55,6 +55,25 @@ config = SPPLoggerConfig.from_env()
 | log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                                                      |
 | stream    | IO              | `sys.stdout`                                                                                                                          |
 
+#### Logging with extra custom attributes
+
+**Note**: If an attribute name overlaps with a context, the context always takes preference.
+
+```python
+from spp_logger import SPPLogger, SPPLoggerConfig
+
+config = SPPLoggerConfig.from_env()
+logger = SPPLogger(
+    name="test-logger",
+    config=config,
+)
+
+logger.info("my message", extra={"custom-field": "custom-value"})
+```
+
+Using these fields is useful as they will be added to the log message as json fields,
+making them easily searchable in your logging service.
+
 ### SPPHandler
 
 | Argument  | Type            | Default                                                                                                                               |

@@ -34,6 +34,9 @@ class SPPHandler(logging.StreamHandler):
         self._context = self.set_context(context)
         self.level = self._context.get("log_level")
 
+    def makeRecord(self, *args, **kwargs):
+        return super().makeRecord(*args, **kwargs)
+
     def format(self, record: logging.LogRecord) -> str:
         log_message = {
             "log_level": record.levelname,
@@ -45,9 +48,13 @@ class SPPHandler(logging.StreamHandler):
             "deployment": self.config.deployment,
             "user": self.get_user(),
         }
+        extra = {}
+        if hasattr(record, "_extra") and record._extra is not None:  # type: ignore
+            extra = record._extra  # type: ignore
         return json.dumps(
             {
                 **log_message,
+                **extra,
                 **{
                     k: self._context[k] for k in self._context if k not in ["log_level"]
                 },

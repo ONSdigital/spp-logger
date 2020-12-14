@@ -1,7 +1,8 @@
 import logging
 import sys
 from contextlib import contextmanager
-from typing import IO, Iterator, Union
+from types import TracebackType
+from typing import IO, Any, Iterator, Mapping, Optional, Tuple, Union
 
 import immutables
 
@@ -31,6 +32,29 @@ class SPPLogger(logging.Logger):
 
     def set_context(self, context: immutables.Map) -> immutables.Map:
         return self.spp_handler.set_context(context)
+
+    def makeRecord(
+        self,
+        name: str,
+        level: int,
+        fn: str,
+        lno: int,
+        msg: str,
+        args: Union[Tuple[Any, ...], Mapping[str, Any]],
+        exc_info: Union[
+            Tuple[type, BaseException, Optional[TracebackType]],
+            Tuple[None, None, None],
+            None,
+        ],
+        func: Optional[str] = None,
+        extra: Optional[Mapping[str, Any]] = None,
+        sinfo: Optional[str] = None,
+    ) -> logging.LogRecord:
+        record = super().makeRecord(
+            name, level, fn, lno, msg, args, exc_info, func, extra, sinfo
+        )
+        record._extra = extra  # type: ignore
+        return record
 
     @property
     def context(self) -> immutables.Map:

@@ -82,3 +82,17 @@ def test_setLevel_disabled(spp_logger):
         + "Please set the log level using the 'log_level' attribute "
         + "on your context"
     )
+
+
+def test_log_extra_attribute(spp_logger, log_stream):
+    spp_logger.info("my info log message", extra={"foobar": "barfoo"})
+    log_messages = parse_log_lines(log_stream.getvalue())
+    assert len(log_messages) == 1
+    assert log_messages[0]["foobar"] == "barfoo"
+
+
+def test_log_extra_attribute_cannot_override_context(spp_logger, log_stream):
+    spp_logger.info("my info log message", extra={"log_correlation_type": "ERROR"})
+    log_messages = parse_log_lines(log_stream.getvalue())
+    assert len(log_messages) == 1
+    assert log_messages[0]["log_correlation_type"] == "AUTO"
