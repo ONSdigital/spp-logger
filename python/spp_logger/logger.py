@@ -13,8 +13,8 @@ from .handler import SPPHandler
 class SPPLogger(logging.Logger):
     def __init__(
         self,
-        name: str,
         config: SPPLoggerConfig,
+        name: str = "spp-logger",
         context: immutables.Map = None,
         stream: IO = sys.stdout,
     ) -> None:

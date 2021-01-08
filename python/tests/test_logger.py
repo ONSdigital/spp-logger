@@ -20,7 +20,7 @@ def test_logger_set_context_attribute(spp_logger, log_stream):
     assert spp_logger.context.get("my_attribute") == "my_attribute_value"
     spp_logger.info("my info log message")
     log_messages = parse_log_lines(log_stream.getvalue())
-    assert len(log_messages[0]) == 12
+    assert len(log_messages[0]) == 11
     assert log_messages[0]["my_attribute"] == "my_attribute_value"
 
 

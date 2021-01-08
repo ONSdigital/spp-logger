@@ -18,7 +18,6 @@ def default_handler_config():
         component="test-component",
         environment="dev",
         deployment="test-deployment",
-        user="test-user",
     )
 
 

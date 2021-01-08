@@ -1,5 +1,4 @@
 import logging
-from unittest import mock
 from uuid import uuid4
 
 import immutables
@@ -20,7 +19,7 @@ def test_handler_logs(logger, log_stream):
     ), f"Expected log lines to be JSON but was: '{log_line}'"
     log_messages = parse_log_lines(log_stream.getvalue())
     assert len(log_messages) == 1
-    assert len(log_messages[0]) == 11
+    assert len(log_messages[0]) == 10
     assert log_messages[0]["log_level"] == "INFO"
     assert log_messages[0]["timestamp"] == "2020-11-13T00:00:00+00:00"
     assert log_messages[0]["description"] == "my info log message"
@@ -28,7 +27,6 @@ def test_handler_logs(logger, log_stream):
     assert log_messages[0]["component"] == "test-component"
     assert log_messages[0]["environment"] == "dev"
     assert log_messages[0]["deployment"] == "test-deployment"
-    assert log_messages[0]["user"] == "test-user"
     assert log_messages[0]["configured_log_level"] == "INFO"
     assert log_messages[0]["log_correlation_type"] == "AUTO"
     assert is_valid_uuid(log_messages[0]["log_correlation_id"])
@@ -44,20 +42,6 @@ def test_handler_multiline_logs(logger, log_stream):
 
 def test_get_timestamp(spp_handler, log_record):
     assert spp_handler.get_timestamp(log_record) == "2020-11-13T00:00:00+00:00"
-
-
-def test_get_user(spp_handler):
-    assert spp_handler.get_user() == "test-user"
-
-
-@mock.patch("getpass.getuser")
-def test_get_user_dynamic(mock_get_user, spp_handler):
-    mock_get_user.return_value = "my_test_user"
-    spp_handler.config.user = None
-    assert spp_handler.get_user() == "my_test_user"
-    spp_handler.get_user()
-    spp_handler.get_user()
-    mock_get_user.assert_called_once()
 
 
 def test_context_is_immutable(default_handler_config, log_stream):
@@ -108,7 +92,7 @@ def test_set_context_attribute(logger, spp_handler, log_stream):
     assert spp_handler.context.get("my_attribute") == "my_attribute_value"
     logger.info("my info log message")
     log_messages = parse_log_lines(log_stream.getvalue())
-    assert len(log_messages[0]) == 12
+    assert len(log_messages[0]) == 11
     assert log_messages[0]["my_attribute"] == "my_attribute_value"
 
 
@@ -176,8 +160,7 @@ def test_context_has_required_attributes(spp_handler):
         str(err.value)
         == "Context must contain required arguments: "
         + "log_level, "
-        + "log_correlation_id, "
-        + "log_correlation_type"
+        + "log_correlation_id"
     )
 
 

@@ -1,6 +1,5 @@
 import os
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass
@@ -9,7 +8,6 @@ class SPPLoggerConfig:
     component: str
     environment: str
     deployment: str
-    user: Optional[str] = None
     timezone: str = "UTC"
 
     @classmethod
@@ -19,6 +17,5 @@ class SPPLoggerConfig:
             component=os.environ["SPP_COMPONENT"],
             environment=os.environ["SPP_ENVIRONMENT"],
             deployment=os.environ["SPP_DEPLOYMENT"],
-            user=os.getenv("SPP_USER", None),
             timezone=os.getenv("TIMEZONE", "UTC"),
         )

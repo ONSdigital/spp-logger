@@ -20,6 +20,7 @@ A collection of logging libraries to implement standardised logging.
     - held in an attribute called 'context'
     - immutable, and cannot be changed/removed by any subsequent process
 - Subsequent processes in the chain can add additional attributes to context as necessary (e.g. reference). These are also immutable.
+    - For example: **user** - Initiating User or "System"
 - All items in the context are printed to the log.
 
 ### When logging
@@ -27,7 +28,6 @@ A collection of logging libraries to implement standardised logging.
 - Several compulsory attributes: (NB. these are still very much up for discussion)
     - **timestamp** - Implicit? Legacy question
     - **description** - Bespoke text description of what has happened
-    - **user** - Initiating User or "System"
     - **service** - Parent service name. e.g. Validation, rsi-results-pipeline. (Leads to come up with a list)
     - **component** - The lambda/pod/function name. e.g rsi_json_standardisation. 
     - **environment** - Describe where the function is run E.g. dev-sandbox, uat, int, etc. This could include the account-id. (This assumes that log collation doesn't make this implicit)

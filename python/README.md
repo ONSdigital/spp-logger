@@ -8,6 +8,17 @@ A python log handler to ship standardised logs.
 
 ## Usage
 
+### Quickstart
+
+```python
+from spp_logger import SPPLogger, SPPLoggerConfig
+
+logger = SPPLogger(config=SPPLoggerConfig.from_env())
+```
+
+When creating an instance of `SPPLogger` it will create a default `context` with a random `uuid` to use as a
+correlation ID, the `log_level` will default to `INFO` and `stream` will default to `stdout`.
+
 ```python
 from spp_logger import SPPLogger, SPPLoggerConfig
 
@@ -34,7 +45,6 @@ logger = SPPLogger(
 | component   | str  | `SPP_COMPONENT`   | N/A                                                                          |
 | environment | str  | `SPP_ENVIRONMENT` | N/A                                                                          |
 | deployment  | str  | `SPP_DEPLOYMENT`  | N/A                                                                          |
-| user        | str  | `SPP_USER`        | `None` - When set to None the handler will detect the current logged in user |
 | timezone    | str  | `TIMEZONE`        | `UTC`                                                                        |
 
 #### Load from env
@@ -49,7 +59,7 @@ config = SPPLoggerConfig.from_env()
 
 | Argument  | Type            | Default                                                                                                                               |
 |-----------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| name      | str             | N/A                                                                                                                                   |
+| name      | str             | `spp-logger`                                                                                                                                   |
 | config    | SPPLoggerConfig | `UTC`                                                                                                                                 |
 | context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_correlation_type": type, log_level": log_level}` |
 | log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                                                      |
@@ -110,7 +120,7 @@ def handler(event, context):
 
 Result:
 ```json
-{"log_level":"INFO","timestamp":"2020-11-17T12:14:58.990943+00:00","description":"Lambda started","user":"test-user","service":"test-service","component":"test-component","environment":"dev","deployment":"test-deployment","log_correlation_id":"e00b4eb1-a853-4955-b38a-fb4a5ea305e4","configured_log_level":"INFO"}
+{"log_level":"INFO","timestamp":"2020-11-17T12:14:58.990943+00:00","description":"Lambda started","service":"test-service","component":"test-component","environment":"dev","deployment":"test-deployment","log_correlation_id":"e00b4eb1-a853-4955-b38a-fb4a5ea305e4","configured_log_level":"INFO"}
 ```
 
 However this may not be the desired behaviour in long running app as your `context` is separate

@@ -1,4 +1,3 @@
-import getpass
 import json
 import logging
 import sys
@@ -12,7 +11,7 @@ import pytz as pytz
 
 from .config import SPPLoggerConfig
 
-CONTEXT_REQUIRED_FIELDS = ["log_level", "log_correlation_id", "log_correlation_type"]
+CONTEXT_REQUIRED_FIELDS = ["log_level", "log_correlation_id"]
 
 
 class SPPHandler(logging.StreamHandler):
@@ -46,7 +45,6 @@ class SPPHandler(logging.StreamHandler):
             "component": self.config.component,
             "environment": self.config.environment,
             "deployment": self.config.deployment,
-            "user": self.get_user(),
         }
         extra = {}
         if hasattr(record, "_extra") and record._extra is not None:  # type: ignore
@@ -65,11 +63,6 @@ class SPPHandler(logging.StreamHandler):
     def get_timestamp(self, record: logging.LogRecord) -> str:
         tz = pytz.timezone(self.config.timezone)
         return datetime.fromtimestamp(record.created, tz).isoformat()
-
-    def get_user(self) -> str:
-        if self.config.user is None:
-            self.config.user = getpass.getuser()
-        return self.config.user
 
     def set_context_attribute(self, attribute_name: str, attribute_value: str) -> None:
         if attribute_name in self._context:
