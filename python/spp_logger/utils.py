@@ -4,8 +4,9 @@ import immutables
 
 
 def context_to_dict(context: immutables.Map) -> dict:
+    keys = [key for key in context.keys()]
     context_dict = {}
-    for key in context.keys():
+    for key in sorted(keys):
         context_dict[key] = context.get(key)
     return context_dict
 
