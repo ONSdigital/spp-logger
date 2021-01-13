@@ -20,3 +20,13 @@ def test_dict_to_context():
         correlation_id="test-correlation-id",
         log_level="INFO",
     )
+
+
+def test_dict_to_context_empty():
+    context_dict = {}
+    assert dict_to_context(context_dict) is None
+
+
+def test_dict_to_context_none():
+    context_dict = None
+    assert dict_to_context(context_dict) is None
