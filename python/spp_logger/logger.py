@@ -15,12 +15,14 @@ class SPPLogger(logging.Logger):
         self,
         config: SPPLoggerConfig,
         name: str = "spp-logger",
+        log_level: Union[int, str] = logging.INFO,
         context: immutables.Map = None,
         stream: IO = sys.stdout,
     ) -> None:
         super().__init__(name, logging.DEBUG)
         handler = SPPHandler(
             config=config,
+            log_level=log_level,
             context=context,
             stream=stream,
         )
