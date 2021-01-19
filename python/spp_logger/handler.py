@@ -1,9 +1,12 @@
+import io
 import json
 import logging
 import sys
+import traceback
 from contextlib import contextmanager
 from datetime import datetime
-from typing import IO, Iterator, Union
+from types import TracebackType
+from typing import IO, Iterator, Optional, Tuple, Union
 from uuid import uuid4
 
 import immutables
@@ -37,6 +40,8 @@ class SPPHandler(logging.StreamHandler):
         return super().makeRecord(*args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
+        print(record)
+        print(record.exc_info)
         log_message = {
             "log_level": record.levelname,
             "timestamp": self.get_timestamp(record),
@@ -46,6 +51,8 @@ class SPPHandler(logging.StreamHandler):
             "environment": self.config.environment,
             "deployment": self.config.deployment,
         }
+        if record.exc_info:
+            log_message["exception_details"] = self._format_exception_details(record)
         extra = {}
         if hasattr(record, "_extra") and record._extra is not None:  # type: ignore
             extra = record._extra  # type: ignore
@@ -59,6 +66,41 @@ class SPPHandler(logging.StreamHandler):
                 "configured_log_level": self.format_log_level(self.level),
             }
         )
+
+    def _format_exception_details(self, record: logging.LogRecord) -> str:
+        s = ""
+        if record.exc_info:
+            # Cache the traceback text to avoid converting it multiple times
+            # (it's constant anyway)
+            if not record.exc_text:
+                record.exc_text = self._format_exception(record.exc_info)
+        if record.exc_text:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + record.exc_text
+        if record.stack_info:
+            if s[-1:] != "\n":
+                s = s + "\n"
+            s = s + record.stack_info
+        return s
+
+    def _format_exception(
+        self,
+        ei: Union[
+            Tuple[type, BaseException, Optional[TracebackType]], Tuple[None, None, None]
+        ],
+    ) -> str:
+        sio = io.StringIO()
+        tb = ei[2]
+        # See issues #9427, #1553375. Commented out for now.
+        # if getattr(self, 'fullstack', False):
+        #    traceback.print_stack(tb.tb_frame.f_back, file=sio)
+        traceback.print_exception(ei[0], ei[1], tb, None, sio)
+        s = sio.getvalue()
+        sio.close()
+        if s[-1:] == "\n":
+            s = s[:-1]
+        return s
 
     def get_timestamp(self, record: logging.LogRecord) -> str:
         tz = pytz.timezone(self.config.timezone)
