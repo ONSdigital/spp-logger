@@ -40,8 +40,6 @@ class SPPHandler(logging.StreamHandler):
         return super().makeRecord(*args, **kwargs)
 
     def format(self, record: logging.LogRecord) -> str:
-        print(record)
-        print(record.exc_info)
         log_message = {
             "log_level": record.levelname,
             "timestamp": self.get_timestamp(record),
