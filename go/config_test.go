@@ -9,14 +9,20 @@ import (
 )
 
 var _ = Describe("The config", func() {
-	It("returns the correct environment variables set in os", func() {
+	BeforeEach(func() {
 		os.Setenv("SPP_SERVICE", "test")
 		os.Setenv("SPP_COMPONENT", "test")
 		os.Setenv("SPP_ENVIRONMENT", "test")
 		os.Setenv("SPP_DEPLOYMENT", "test")
 		os.Setenv("SPP_USER", "test_user")
 		os.Setenv("TIMEZONE", "UTC")
+	})
 
+	AfterEach(func() {
+		os.Clearenv()
+	})
+
+	It("returns the correct environment variables set in os", func() {
 		expected := SPPLoggerConfig{
 			Service:     "test",
 			Component:   "test",
@@ -26,6 +32,5 @@ var _ = Describe("The config", func() {
 			Timezone:    "UTC",
 		}
 		Expect(FromEnv()).Should(Equal(expected))
-
 	})
 })
