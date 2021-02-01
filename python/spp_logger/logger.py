@@ -1,7 +1,8 @@
 import logging
 import sys
 from contextlib import contextmanager
-from typing import IO, Iterator, Union
+from types import TracebackType
+from typing import IO, Any, Iterator, Mapping, Optional, Tuple, Union
 
 import immutables
 
@@ -12,13 +13,17 @@ from .handler import SPPHandler
 class SPPLogger(logging.Logger):
     def __init__(
         self,
-        name: str,
         config: SPPLoggerConfig,
+        name: str = "spp-logger",
+        log_level: Union[int, str] = logging.INFO,
+        context: immutables.Map = None,
         stream: IO = sys.stdout,
     ) -> None:
         super().__init__(name, logging.DEBUG)
         handler = SPPHandler(
             config=config,
+            log_level=log_level,
+            context=context,
             stream=stream,
         )
         self.spp_handler = handler
@@ -29,6 +34,29 @@ class SPPLogger(logging.Logger):
 
     def set_context(self, context: immutables.Map) -> immutables.Map:
         return self.spp_handler.set_context(context)
+
+    def makeRecord(
+        self,
+        name: str,
+        level: int,
+        fn: str,
+        lno: int,
+        msg: str,
+        args: Union[Tuple[Any, ...], Mapping[str, Any]],
+        exc_info: Union[
+            Tuple[type, BaseException, Optional[TracebackType]],
+            Tuple[None, None, None],
+            None,
+        ],
+        func: Optional[str] = None,
+        extra: Optional[Mapping[str, Any]] = None,
+        sinfo: Optional[str] = None,
+    ) -> logging.LogRecord:
+        record = super().makeRecord(
+            name, level, fn, lno, msg, args, exc_info, func, extra, sinfo
+        )
+        record._extra = extra  # type: ignore
+        return record
 
     @property
     def context(self) -> immutables.Map:

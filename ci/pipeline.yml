@@ -1,0 +1,23 @@
+resources:
+- name: spp-logger-git
+  type: git
+  source:
+    uri: https://github.com/ONSdigital/spp-logger.git
+    branch: master
+    username: ((github.concourse_access_key))
+    password: x-oauth-basic
+
+jobs:
+- name: lint
+  plan:
+  - get: spp-logger-git
+    trigger: true
+  - task: lint
+    file: spp-logger-git/ci/tasks/python/lint/task.yml
+
+- name: unit-test
+  plan:
+  - get: spp-logger-git
+    trigger: true
+  - task: unit-test
+    file: spp-logger-git/ci/tasks/python/test/task.yml
