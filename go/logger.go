@@ -56,6 +56,10 @@ func NewLogger(config SPPLoggerConfig, logLevel logrus.Level, output io.Writer) 
 	return sppLogger
 }
 
+func (sppLogger *SPPLogger) Critical(args ...interface{}) {
+	sppLogger.Error(args...)
+}
+
 func (hook *ConfigHook) Fire(entry *logrus.Entry) error {
 	fields := logrus.Fields{
 		"service":     hook.Config.Service,
