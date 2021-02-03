@@ -18,6 +18,10 @@ type SPPLogger struct {
 	// Stream
 }
 
+type ConfigHook struct {
+	Config *SPPLoggerConfig
+}
+
 type SPPLoggerEntry struct {
 	logrus.Entry
 }
@@ -32,7 +36,7 @@ type LogMessage struct {
 	deployment  string
 }
 
-func NewLogger(config SPPLoggerConfig, logLevel logrus.Level, output io.Writer) *SPPLoggerEntry {
+func NewLogger(config SPPLoggerConfig, logLevel logrus.Level, output io.Writer) *SPPLogger {
 	sppLogger := &SPPLogger{
 		Config: config,
 	}
@@ -45,31 +49,33 @@ func NewLogger(config SPPLoggerConfig, logLevel logrus.Level, output io.Writer) 
 	})
 	sppLogger.SetOutput(output)
 	sppLogger.SetLevel(logLevel)
-	logrusEntry := sppLogger.WithFields(logrus.Fields{"service": sppLogger.Config.Service, "component": sppLogger.Config.Component, "environment": sppLogger.Config.Environment, "deployment": sppLogger.Config.Deployment, "timezone": sppLogger.Config.Timezone})
-	return &SPPLoggerEntry{*logrusEntry}
+	sppLogger.Hooks = make(logrus.LevelHooks)
+	sppLogger.AddHook(&ConfigHook{
+		Config: &sppLogger.Config,
+	})
+	return sppLogger
 }
 
-// func OurLog(log_text string, name string, log_level string) {
-// 	// log_info := SPPLogger{
-// 	// 	Config:   FromEnv(),
-// 	// 	Name:     name,
-// 	// 	LogLevel: log_level,
-// 	// }
-// 	// log_message := LogMessage{
-// 	// 	log_level:   log_info.LogLevel,
-// 	// 	timestamp:   time.Now(),
-// 	// 	description: log_text,
-// 	// 	service:     log_info.Config.Service,
-// 	// 	component:   log_info.Config.Component,
-// 	// 	environment: log_info.Config.Environment,
-// 	// 	deployment:  log_info.Config.Deployment,
-// 	// }
+func (hook *ConfigHook) Fire(entry *logrus.Entry) error {
+	fields := logrus.Fields{
+		"service":     hook.Config.Service,
+		"component":   hook.Config.Component,
+		"environment": hook.Config.Environment,
+		"deployment":  hook.Config.Deployment,
+		"timezone":    hook.Config.Timezone,
+	}
+	addFieldsToEntry(fields, entry)
+	return nil
+}
 
-// 	log.SetFormatter(&log.JSONFormatter{})
+func (hook *ConfigHook) Levels() []logrus.Level {
+	return logrus.AllLevels
+}
 
-// 	// log.SetOutput(os.Stdout)
-
-// 	// log.SetLevel(log.WarnLevel)
-
-// 	log.Info(log_text)
-// }
+func addFieldsToEntry(fields logrus.Fields, entry *logrus.Entry) {
+	for field, value := range fields {
+		if _, ok := entry.Data[field]; !ok {
+			entry.Data[field] = value
+		}
+	}
+}

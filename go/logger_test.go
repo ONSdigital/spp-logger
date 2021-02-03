@@ -45,7 +45,6 @@ var _ = Describe("the strings package", func() {
 			Timezone:    "UTC",
 		}, logrus.InfoLevel, &buf)
 		logger.Info("test_message")
-		// OurLog("log_text", "test", "INFO")
 
 		logMessage := make(map[string]string)
 		err := json.Unmarshal(buf.Bytes(), &logMessage)
@@ -60,5 +59,4 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessage["deployment"]).To(Equal("test_deployment"))
 		Expect(logMessage["timezone"]).To(Equal("UTC"))
 	})
-
 })
