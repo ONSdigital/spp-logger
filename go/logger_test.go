@@ -2,8 +2,10 @@ package spp_logger_test
 
 import (
 	"bytes"
-	"log"
-	"os"
+	"encoding/json"
+	"fmt"
+
+	// "os"
 	"time"
 
 	monkey "bou.ke/monkey"
@@ -12,29 +14,43 @@ import (
 
 	// . "github.com/smartystreets/goconvey/convey"
 	. "github.com/ONSDigital/spp-logger/go"
+	"github.com/sirupsen/logrus"
 )
 
 var _ = Describe("the strings package", func() {
-	It("returns `true`", func() {
-		Expect(Handler()).To(BeTrue())
-	})
+	// BeforeEach(func() {
+	// 	os.Setenv("SPP_SERVICE", "test_service")
+	// 	os.Setenv("SPP_COMPONENT", "test_component")
+	// 	os.Setenv("SPP_ENVIRONMENT", "test_env")
+	// 	os.Setenv("SPP_DEPLOYMENT", "test_deployment")
+	// 	os.Setenv("SPP_USER", "test_user")
+	// 	os.Setenv("TIMEZONE", "UTC")
+	// })
 
-	It("logs the string", func() {
+	// AfterEach(func() {
+	// 	os.Clearenv()
+	// })
+
+	It("logs the string input", func() {
 		monkey.Patch(time.Now, func() time.Time {
 			return time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
 		})
-		output := captureOutput(func() {
-			OurLog()
-		})
-		Expect(output).To(Equal("2009/11/17 20:34:58 log_text\n"))
 
+		var buf bytes.Buffer
+		logger := NewLogger(SPPLoggerConfig{
+			Service: "test_service",
+		}, logrus.InfoLevel, &buf)
+		logger.Info("test_message")
+		// OurLog("log_text", "test", "INFO")
+
+		logMessage := make(map[string]string)
+		err := json.Unmarshal(buf.Bytes(), &logMessage)
+		Expect(err).To(BeNil())
+		fmt.Println(logMessage)
+		Expect(logMessage["log_level"]).To(Equal("info"))
+		Expect(logMessage["timestamp"]).To(Equal("2009-11-17T20:34:58Z"))
+		Expect(logMessage["description"]).To(Equal("test_message"))
+		Expect(logMessage["service"]).To(Equal("test_service"))
 	})
-})
 
-func captureOutput(f func()) string {
-	var buf bytes.Buffer
-	log.SetOutput(&buf)
-	f()
-	log.SetOutput(os.Stderr)
-	return buf.String()
-}
+})
