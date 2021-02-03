@@ -45,7 +45,7 @@ func NewLogger(config SPPLoggerConfig, logLevel logrus.Level, output io.Writer) 
 	})
 	sppLogger.SetOutput(output)
 	sppLogger.SetLevel(logLevel)
-	logrusEntry := sppLogger.WithFields(logrus.Fields{"service": sppLogger.Config.Service})
+	logrusEntry := sppLogger.WithFields(logrus.Fields{"service": sppLogger.Config.Service, "component": sppLogger.Config.Component, "environment": sppLogger.Config.Environment, "deployment": sppLogger.Config.Deployment, "timezone": sppLogger.Config.Timezone})
 	return &SPPLoggerEntry{*logrusEntry}
 }
 

@@ -9,8 +9,8 @@ type SPPLoggerConfig struct {
 	Component   string
 	Environment string
 	Deployment  string
-	User        string //TODO
-	Timezone    string //TODO
+	// User        string //TODO
+	Timezone string //TODO
 }
 
 func GetEnv(key, fallback string) string {
@@ -27,8 +27,8 @@ func FromEnv() SPPLoggerConfig {
 		Component:   GetEnv("SPP_COMPONENT", ""),
 		Environment: GetEnv("SPP_ENVIRONMENT", ""),
 		Deployment:  GetEnv("SPP_DEPLOYMENT", ""),
-		User:        GetEnv("SPP_USER", "nil"), //TODO
-		Timezone:    GetEnv("TIMEZONE", "UTC"), //TODO
+		// User:        GetEnv("SPP_USER", "nil"), //TODO
+		Timezone: GetEnv("TIMEZONE", "UTC"), //TODO
 	}
 
 	return LoggerConfig

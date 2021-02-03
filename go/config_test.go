@@ -14,7 +14,7 @@ var _ = Describe("The config", func() {
 		os.Setenv("SPP_COMPONENT", "test")
 		os.Setenv("SPP_ENVIRONMENT", "test")
 		os.Setenv("SPP_DEPLOYMENT", "test")
-		os.Setenv("SPP_USER", "test_user")
+		// os.Setenv("SPP_USER", "test_user")
 		os.Setenv("TIMEZONE", "UTC")
 	})
 
@@ -28,8 +28,8 @@ var _ = Describe("The config", func() {
 			Component:   "test",
 			Environment: "test",
 			Deployment:  "test",
-			User:        "test_user",
-			Timezone:    "UTC",
+			// User:        "test_user",
+			Timezone: "UTC",
 		}
 		Expect(FromEnv()).Should(Equal(expected))
 	})

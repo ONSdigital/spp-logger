@@ -38,7 +38,11 @@ var _ = Describe("the strings package", func() {
 
 		var buf bytes.Buffer
 		logger := NewLogger(SPPLoggerConfig{
-			Service: "test_service",
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
 		}, logrus.InfoLevel, &buf)
 		logger.Info("test_message")
 		// OurLog("log_text", "test", "INFO")
@@ -51,6 +55,10 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessage["timestamp"]).To(Equal("2009-11-17T20:34:58Z"))
 		Expect(logMessage["description"]).To(Equal("test_message"))
 		Expect(logMessage["service"]).To(Equal("test_service"))
+		Expect(logMessage["component"]).To(Equal("test_component"))
+		Expect(logMessage["environment"]).To(Equal("test_environment"))
+		Expect(logMessage["deployment"]).To(Equal("test_deployment"))
+		Expect(logMessage["timezone"]).To(Equal("UTC"))
 	})
 
 })
