@@ -41,7 +41,6 @@ var _ = Describe("the strings package", func() {
 			Service: "test_service",
 		}, logrus.InfoLevel, &buf)
 		logger.Info("test_message")
-		// OurLog("log_text", "test", "INFO")
 
 		logMessage := make(map[string]string)
 		err := json.Unmarshal(buf.Bytes(), &logMessage)
@@ -52,5 +51,4 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessage["description"]).To(Equal("test_message"))
 		Expect(logMessage["service"]).To(Equal("test_service"))
 	})
-
 })
