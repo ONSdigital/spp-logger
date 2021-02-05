@@ -14,6 +14,14 @@ const (
 	CriticalLevel = "CRITICAL"
 )
 
+var AllLevels = []string{
+	DebugLevel,
+	InfoLevel,
+	WarningLevel,
+	ErrorLevel,
+	CriticalLevel,
+}
+
 func WriteLevel(level logrus.Level) string {
 	levelMapping := map[logrus.Level]string{
 		logrus.TraceLevel: DebugLevel,
@@ -39,4 +47,27 @@ func LoadLevel(level string) logrus.Level {
 		CriticalLevel: logrus.FatalLevel,
 	}
 	return levelMapping[strings.ToUpper(level)]
+}
+
+func ValidLevel(level string) bool {
+	for _, logLevel := range AllLevels {
+		if logLevel == strings.ToUpper(level) {
+			return true
+		}
+	}
+	return false
+}
+
+type levelHook struct{}
+
+func (hook *levelHook) Fire(entry *logrus.Entry) error {
+	fields := logrus.Fields{
+		"log_level": WriteLevel(entry.Level),
+	}
+	addFieldsToEntry(fields, entry)
+	return nil
+}
+
+func (hook *levelHook) Levels() []logrus.Level {
+	return logrus.AllLevels
 }

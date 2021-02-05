@@ -25,6 +25,9 @@ func (context *Context) IsValid() error {
 	if context.logLevel == "" || context.correlationID == "" {
 		return fmt.Errorf("Context field missing, must set `logLevel` and `correlationID`")
 	}
+	if !ValidLevel(context.logLevel) {
+		return fmt.Errorf("Log level is not valid, should be one of '%v'", AllLevels)
+	}
 	return nil
 }
 
@@ -43,7 +46,8 @@ func NewContext(logLevel, correlationID string) (*Context, error) {
 
 func (context *Context) Fire(entry *logrus.Entry) error {
 	fields := logrus.Fields{
-		"correlation_id": context.CorrelationID(),
+		"correlation_id":       context.CorrelationID(),
+		"configured_log_level": context.LogLevel(),
 	}
 	addFieldsToEntry(fields, entry)
 	return nil

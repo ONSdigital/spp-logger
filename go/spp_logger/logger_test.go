@@ -9,8 +9,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/sirupsen/logrus"
-
 	"github.com/ONSDigital/spp-logger/go/spp_logger"
 )
 
@@ -41,13 +39,13 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, context, logrus.InfoLevel, "INFO", &buf)
+		}, context, "INFO", &buf)
 		logger.Info("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
 
-		Expect(logMessages[0]["log_level"]).To(Equal("info"))
+		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58Z"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
 		Expect(logMessages[0]["correlation_id"]).To(Equal("test_correlation_id"))
@@ -66,13 +64,14 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, nil, logrus.InfoLevel, "INFO", &buf)
-		logger.Warn("test_message")
+		}, nil, "DEBUG", &buf)
+		logger.Trace("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
 
-		Expect(logMessages[0]["log_level"]).To(Equal("warning"))
+		Expect(logMessages[0]["log_level"]).To(Equal("DEBUG"))
+		Expect(logMessages[0]["go_log_level"]).To(Equal("trace"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
 
 	})
@@ -85,13 +84,13 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, nil, logrus.InfoLevel, "INFO", &buf)
+		}, nil, "INFO", &buf)
 		logger.Error("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
 
-		Expect(logMessages[0]["log_level"]).To(Equal("error"))
+		Expect(logMessages[0]["log_level"]).To(Equal("ERROR"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
 
 	})
@@ -108,12 +107,12 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, nil, logrus.InfoLevel, "INFO", &buf)
+		}, nil, "INFO", &buf)
 		logger.Info("test_message")
 		logger.Info("second_test_message")
 
 		logMessagess, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
-		Expect(logMessagess[0]["log_level"]).To(Equal("info"))
+		Expect(logMessagess[0]["log_level"]).To(Equal("INFO"))
 	})
 })

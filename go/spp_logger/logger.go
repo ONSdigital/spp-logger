@@ -20,7 +20,7 @@ type ConfigHook struct {
 	Config *Config
 }
 
-func NewLogger(config Config, context *Context, goLogLevel logrus.Level, logLevel string, output io.Writer) (*Logger, error) {
+func NewLogger(config Config, context *Context, logLevel string, output io.Writer) (*Logger, error) {
 	if context == nil {
 		context, _ = NewContext(logLevel, "correlation_id")
 	}
@@ -35,17 +35,18 @@ func NewLogger(config Config, context *Context, goLogLevel logrus.Level, logLeve
 
 	sppLogger.SetFormatter(&logrus.JSONFormatter{
 		FieldMap: logrus.FieldMap{
-			logrus.FieldKeyLevel: "log_level",
+			logrus.FieldKeyLevel: "go_log_level",
 			logrus.FieldKeyTime:  "timestamp",
 			logrus.FieldKeyMsg:   "description",
 		},
 	})
 	sppLogger.SetOutput(output)
-	sppLogger.SetLevel(goLogLevel)
+	sppLogger.SetLevel(LoadLevel(logLevel))
 	sppLogger.Hooks = make(logrus.LevelHooks)
 	sppLogger.AddHook(&ConfigHook{
 		Config: &sppLogger.Config,
 	})
+	sppLogger.AddHook(&levelHook{})
 	sppLogger.AddHook(context)
 	return sppLogger, nil
 }
