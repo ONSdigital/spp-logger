@@ -4,7 +4,6 @@ import (
 	// "log"
 
 	"io"
-	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -19,20 +18,6 @@ type SPPLogger struct {
 
 type ConfigHook struct {
 	Config *SPPLoggerConfig
-}
-
-type SPPLoggerEntry struct {
-	logrus.Entry
-}
-
-type LogMessage struct {
-	log_level   string
-	timestamp   time.Time
-	description string
-	service     string
-	component   string
-	environment string
-	deployment  string
 }
 
 func NewLogger(config SPPLoggerConfig, context SPPLogContext, goLogLevel logrus.Level, logLevel string, output io.Writer) *SPPLogger {
