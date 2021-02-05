@@ -34,13 +34,14 @@ var _ = Describe("the strings package", func() {
 		})
 
 		var buf bytes.Buffer
-		logger := spp_logger.NewLogger(spp_logger.Config{
+		context, _ := spp_logger.NewContext("INFO", "test_correlation_id")
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, spp_logger.NewContext("INFO", "test_correlation_id"), logrus.InfoLevel, "INFO", &buf)
+		}, context, logrus.InfoLevel, "INFO", &buf)
 		logger.Info("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -59,7 +60,7 @@ var _ = Describe("the strings package", func() {
 
 	It("Logs a warning message with the correct message", func() {
 		var buf bytes.Buffer
-		logger := spp_logger.NewLogger(spp_logger.Config{
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
@@ -78,7 +79,7 @@ var _ = Describe("the strings package", func() {
 
 	It("Logs a fatal message with the correct message", func() {
 		var buf bytes.Buffer
-		logger := spp_logger.NewLogger(spp_logger.Config{
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
@@ -101,7 +102,7 @@ var _ = Describe("the strings package", func() {
 		})
 
 		var buf bytes.Buffer
-		logger := spp_logger.NewLogger(spp_logger.Config{
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",

@@ -3,6 +3,8 @@ package spp_logger
 import (
 	"fmt"
 
+	"github.com/google/uuid"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,13 +21,22 @@ func (context *Context) CorrelationID() string {
 	return context.correlationID
 }
 
-func NewContext(logLevel, correlationID string) *Context {
-	return &Context{logLevel: logLevel, correlationID: correlationID}
+func (context *Context) IsValid() error {
+	if context.logLevel == "" || context.correlationID == "" {
+		return fmt.Errorf("Context field missing, must set `logLevel` and `correlationID`")
+	}
+	return nil
 }
 
-func SetContext(context *Context) (*Context, error) {
-	if (context.LogLevel() == "") || (context.CorrelationID() == "") {
-		return nil, fmt.Errorf("Context field missing")
+func NewContext(logLevel, correlationID string) (*Context, error) {
+	var context *Context
+	if logLevel == "" && correlationID == "" {
+		context = &Context{logLevel: "INFO", correlationID: uuid.NewString()}
+	} else {
+		context = &Context{logLevel: logLevel, correlationID: correlationID}
+	}
+	if err := context.IsValid(); err != nil {
+		return nil, err
 	}
 	return context, nil
 }

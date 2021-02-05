@@ -20,12 +20,12 @@ type ConfigHook struct {
 	Config *Config
 }
 
-func NewLogger(config Config, context *Context, goLogLevel logrus.Level, logLevel string, output io.Writer) *Logger {
+func NewLogger(config Config, context *Context, goLogLevel logrus.Level, logLevel string, output io.Writer) (*Logger, error) {
 	if context == nil {
-		context = NewContext(logLevel, "correlation_id")
+		context, _ = NewContext(logLevel, "correlation_id")
 	}
-	context, err := SetContext(context)
-	if err != nil {
+	if err := context.IsValid(); err != nil {
+		return nil, err
 	}
 
 	sppLogger := &Logger{
@@ -47,7 +47,7 @@ func NewLogger(config Config, context *Context, goLogLevel logrus.Level, logLeve
 		Config: &sppLogger.Config,
 	})
 	sppLogger.AddHook(context)
-	return sppLogger
+	return sppLogger, nil
 }
 
 func (sppLogger *Logger) Critical(args ...interface{}) {
