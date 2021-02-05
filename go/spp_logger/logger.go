@@ -8,30 +8,27 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type SPPLogger struct {
+type Logger struct {
 	logrus.Logger
-	Config   SPPLoggerConfig
+	Config   Config
 	Name     string
-	Context  SPPLogContext
+	Context  *Context
 	LogLevel string
 }
 
 type ConfigHook struct {
-	Config *SPPLoggerConfig
+	Config *Config
 }
 
-func NewLogger(config SPPLoggerConfig, context SPPLogContext, goLogLevel logrus.Level, logLevel string, output io.Writer) *SPPLogger {
-	if context == (SPPLogContext{}) {
-		context = SPPLogContext{
-			LogLevel:      logLevel,
-			CorrelationID: "correlation_id",
-		}
+func NewLogger(config Config, context *Context, goLogLevel logrus.Level, logLevel string, output io.Writer) *Logger {
+	if context == nil {
+		context = NewContext(logLevel, "correlation_id")
 	}
 	context, err := SetContext(context)
 	if err != nil {
 	}
 
-	sppLogger := &SPPLogger{
+	sppLogger := &Logger{
 		Config:  config,
 		Context: context,
 	}
@@ -49,12 +46,20 @@ func NewLogger(config SPPLoggerConfig, context SPPLogContext, goLogLevel logrus.
 	sppLogger.AddHook(&ConfigHook{
 		Config: &sppLogger.Config,
 	})
-	sppLogger.AddHook(&context)
+	sppLogger.AddHook(context)
 	return sppLogger
 }
 
-func (sppLogger *SPPLogger) Critical(args ...interface{}) {
+func (sppLogger *Logger) Critical(args ...interface{}) {
 	sppLogger.Error(args...)
+}
+
+func (sppLogger *Logger) Criticalf(format string, args ...interface{}) {
+	sppLogger.Errorf(format, args...)
+}
+
+func (sppLogger *Logger) CriticalFn(fn logrus.LogFunction) {
+	sppLogger.ErrorFn(fn)
 }
 
 func (hook *ConfigHook) Fire(entry *logrus.Entry) error {

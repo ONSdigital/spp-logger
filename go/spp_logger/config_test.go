@@ -3,9 +3,10 @@ package spp_logger_test
 import (
 	"os"
 
-	. "github.com/ONSDigital/spp-logger/go"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"github.com/ONSDigital/spp-logger/go/spp_logger"
 )
 
 var _ = Describe("The config", func() {
@@ -23,7 +24,7 @@ var _ = Describe("The config", func() {
 	})
 
 	It("returns the correct environment variables set in os", func() {
-		expected := SPPLoggerConfig{
+		expected := &spp_logger.Config{
 			Service:     "test",
 			Component:   "test",
 			Environment: "test",
@@ -31,6 +32,6 @@ var _ = Describe("The config", func() {
 			// User:        "test_user",
 			Timezone: "UTC",
 		}
-		Expect(FromEnv()).Should(Equal(expected))
+		Expect(spp_logger.NewConfigFromEnv()).Should(Equal(expected))
 	})
 })

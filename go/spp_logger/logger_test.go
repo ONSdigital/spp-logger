@@ -9,8 +9,9 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	. "github.com/ONSDigital/spp-logger/go"
 	"github.com/sirupsen/logrus"
+
+	"github.com/ONSDigital/spp-logger/go/spp_logger"
 )
 
 var _ = Describe("the strings package", func() {
@@ -33,13 +34,13 @@ var _ = Describe("the strings package", func() {
 		})
 
 		var buf bytes.Buffer
-		logger := NewLogger(SPPLoggerConfig{
+		logger := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, SPPLogContext{CorrelationID: "test_correlation_id", LogLevel: "INFO"}, logrus.InfoLevel, "INFO", &buf)
+		}, spp_logger.NewContext("INFO", "test_correlation_id"), logrus.InfoLevel, "INFO", &buf)
 		logger.Info("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -58,13 +59,13 @@ var _ = Describe("the strings package", func() {
 
 	It("Logs a warning message with the correct message", func() {
 		var buf bytes.Buffer
-		logger := NewLogger(SPPLoggerConfig{
+		logger := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, SPPLogContext{}, logrus.InfoLevel, "INFO", &buf)
+		}, nil, logrus.InfoLevel, "INFO", &buf)
 		logger.Warn("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -77,13 +78,13 @@ var _ = Describe("the strings package", func() {
 
 	It("Logs a fatal message with the correct message", func() {
 		var buf bytes.Buffer
-		logger := NewLogger(SPPLoggerConfig{
+		logger := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, SPPLogContext{}, logrus.InfoLevel, "INFO", &buf)
+		}, nil, logrus.InfoLevel, "INFO", &buf)
 		logger.Error("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -100,13 +101,13 @@ var _ = Describe("the strings package", func() {
 		})
 
 		var buf bytes.Buffer
-		logger := NewLogger(SPPLoggerConfig{
+		logger := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, SPPLogContext{}, logrus.InfoLevel, "INFO", &buf)
+		}, nil, logrus.InfoLevel, "INFO", &buf)
 		logger.Info("test_message")
 		logger.Info("second_test_message")
 
