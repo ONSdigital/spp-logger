@@ -27,7 +27,7 @@ var _ = Describe("the strings package", func() {
 	// 	os.Clearenv()
 	// })
 
-	It("Logs an info message with the correct config", func() {
+	It("Logs an info message with the correct config and context", func() {
 		monkey.Patch(time.Now, func() time.Time {
 			return time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
 		})
@@ -39,7 +39,7 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, logrus.InfoLevel, &buf)
+		}, SPPLogContext{Correlation_id: "test_correlation_id", Log_level: "INFO"}, logrus.InfoLevel, "INFO", &buf)
 		logger.Info("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -48,6 +48,7 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["log_level"]).To(Equal("info"))
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58Z"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
+		Expect(logMessages[0]["correlation_id"]).To(Equal("test_correlation_id"))
 		Expect(logMessages[0]["service"]).To(Equal("test_service"))
 		Expect(logMessages[0]["component"]).To(Equal("test_component"))
 		Expect(logMessages[0]["environment"]).To(Equal("test_environment"))
@@ -63,7 +64,7 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, logrus.InfoLevel, &buf)
+		}, SPPLogContext{}, logrus.InfoLevel, "INFO", &buf)
 		logger.Warn("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -82,7 +83,7 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, logrus.InfoLevel, &buf)
+		}, SPPLogContext{}, logrus.InfoLevel, "INFO", &buf)
 		logger.Error("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
@@ -105,7 +106,7 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, logrus.InfoLevel, &buf)
+		}, SPPLogContext{}, logrus.InfoLevel, "INFO", &buf)
 		logger.Info("test_message")
 		logger.Info("second_test_message")
 
