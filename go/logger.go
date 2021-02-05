@@ -15,13 +15,10 @@ type SPPLogger struct {
 	Name     string
 	Context  SPPLogContext
 	LogLevel string
-	// GoLogLevel logrus.Level
-	// Stream
 }
 
-type ConfigContextHook struct {
-	Config  *SPPLoggerConfig
-	Context *SPPLogContext
+type ConfigHook struct {
+	Config *SPPLoggerConfig
 }
 
 type SPPLoggerEntry struct {
@@ -38,16 +35,11 @@ type LogMessage struct {
 	deployment  string
 }
 
-type SPPLogContext struct {
-	Log_level      string
-	Correlation_id string
-}
-
 func NewLogger(config SPPLoggerConfig, context SPPLogContext, goLogLevel logrus.Level, logLevel string, output io.Writer) *SPPLogger {
 	if context == (SPPLogContext{}) {
 		context = SPPLogContext{
-			Log_level:      logLevel,
-			Correlation_id: "correlation_id",
+			LogLevel:      logLevel,
+			CorrelationID: "correlation_id",
 		}
 	}
 	context, err := SetContext(context)
@@ -69,40 +61,30 @@ func NewLogger(config SPPLoggerConfig, context SPPLogContext, goLogLevel logrus.
 	sppLogger.SetOutput(output)
 	sppLogger.SetLevel(goLogLevel)
 	sppLogger.Hooks = make(logrus.LevelHooks)
-	sppLogger.AddHook(&ConfigContextHook{
-		Config:  &sppLogger.Config,
-		Context: &sppLogger.Context,
+	sppLogger.AddHook(&ConfigHook{
+		Config: &sppLogger.Config,
 	})
+	sppLogger.AddHook(&context)
 	return sppLogger
-}
-
-func SetContext(context SPPLogContext) (SPPLogContext, error) {
-
-	if (context.Log_level == "") || (context.Correlation_id == "") {
-		err := "Context field missing"
-		panic(err)
-	}
-	return context, nil
 }
 
 func (sppLogger *SPPLogger) Critical(args ...interface{}) {
 	sppLogger.Error(args...)
 }
 
-func (hook *ConfigContextHook) Fire(entry *logrus.Entry) error {
+func (hook *ConfigHook) Fire(entry *logrus.Entry) error {
 	fields := logrus.Fields{
-		"correlation_id": hook.Context.Correlation_id,
-		"service":        hook.Config.Service,
-		"component":      hook.Config.Component,
-		"environment":    hook.Config.Environment,
-		"deployment":     hook.Config.Deployment,
-		"timezone":       hook.Config.Timezone,
+		"service":     hook.Config.Service,
+		"component":   hook.Config.Component,
+		"environment": hook.Config.Environment,
+		"deployment":  hook.Config.Deployment,
+		"timezone":    hook.Config.Timezone,
 	}
 	addFieldsToEntry(fields, entry)
 	return nil
 }
 
-func (hook *ConfigContextHook) Levels() []logrus.Level {
+func (hook *ConfigHook) Levels() []logrus.Level {
 	return logrus.AllLevels
 }
 

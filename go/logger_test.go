@@ -39,7 +39,7 @@ var _ = Describe("the strings package", func() {
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, SPPLogContext{Correlation_id: "test_correlation_id", Log_level: "INFO"}, logrus.InfoLevel, "INFO", &buf)
+		}, SPPLogContext{CorrelationID: "test_correlation_id", LogLevel: "INFO"}, logrus.InfoLevel, "INFO", &buf)
 		logger.Info("test_message")
 
 		logMessages, err := parseLogLines(buf.String())
