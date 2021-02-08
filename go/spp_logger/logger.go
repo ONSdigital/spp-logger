@@ -22,7 +22,7 @@ type ConfigHook struct {
 
 func NewLogger(config Config, context *Context, logLevel string, output io.Writer) (*Logger, error) {
 	if context == nil {
-		context, _ = NewContext(logLevel, "correlation_id")
+		context, _ = NewContext("", "")
 	}
 	if err := context.IsValid(); err != nil {
 		return nil, err
@@ -39,7 +39,9 @@ func NewLogger(config Config, context *Context, logLevel string, output io.Write
 			logrus.FieldKeyTime:  "timestamp",
 			logrus.FieldKeyMsg:   "description",
 		},
+		TimestampFormat: "2006-01-02T15:04:05+00:00",
 	})
+
 	sppLogger.SetOutput(output)
 	sppLogger.SetLevel(LoadLevel(logLevel))
 	sppLogger.Hooks = make(logrus.LevelHooks)
