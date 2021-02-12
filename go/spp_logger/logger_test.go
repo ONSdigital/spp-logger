@@ -52,9 +52,8 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[1]["go_log_level"]).To(Equal("warning"))
 		Expect(logMessages[2]["log_level"]).To(Equal("ERROR"))
 		Expect(logMessages[2]["go_log_level"]).To(Equal("error"))
-		// Expect(logMessages[3]["log_level"]).To(Equal("CRITICAL"))
+		Expect(logMessages[3]["log_level"]).To(Equal("CRITICAL"))
 		Expect(logMessages[3]["go_log_level"]).To(Equal("error"))
-
 	})
 
 	It("Logs an info message with the correct config and no context", func() {
