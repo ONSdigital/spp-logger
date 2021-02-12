@@ -22,8 +22,9 @@ type ConfigHook struct {
 
 func NewLogger(config Config, context *Context, logLevel string, output io.Writer) (*Logger, error) {
 	if context == nil {
-		context, _ = NewContext("", "")
+		context, _ = NewContext(logLevel, "")
 	}
+
 	if err := context.IsValid(); err != nil {
 		return nil, err
 	}
@@ -43,7 +44,7 @@ func NewLogger(config Config, context *Context, logLevel string, output io.Write
 	})
 
 	sppLogger.SetOutput(output)
-	sppLogger.SetLevel(LoadLevel(logLevel))
+	sppLogger.SetLevel(LoadLevel(context.LogLevel()))
 	sppLogger.Hooks = make(logrus.LevelHooks)
 	sppLogger.AddHook(&ConfigHook{
 		Config: &sppLogger.Config,

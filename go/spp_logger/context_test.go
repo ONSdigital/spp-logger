@@ -19,15 +19,16 @@ var _ = Describe("#NewContext", func() {
 		})
 	})
 
-	Context("When just log_level is set", func() {
-		It("Should return an error", func() {
+	Context("When a log_level is set in the logger but not in the context", func() {
+		It("Should generate a new context with the supplied log level and a uuid for correlation_id", func() {
 			context, err := spp_logger.NewContext("INFO", "")
-			Expect(err).To(MatchError("Context field missing, must set `logLevel` and `correlationID`"))
-			Expect(context).To(BeNil())
+			Expect(context.LogLevel()).To(Equal("INFO"))
+			_, err = uuid.Parse(context.CorrelationID())
+			Expect(err).To(BeNil())
 		})
 	})
 
-	Context("When just correlation id is set", func() {
+	Context("When no log level is set, just a correlation id", func() {
 		It("Should return an error", func() {
 			context, err := spp_logger.NewContext("", "correlation_id")
 			Expect(err).To(MatchError("Context field missing, must set `logLevel` and `correlationID`"))

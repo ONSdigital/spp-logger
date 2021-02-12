@@ -35,6 +35,8 @@ func NewContext(logLevel, correlationID string) (*Context, error) {
 	var context *Context
 	if logLevel == "" && correlationID == "" {
 		context = &Context{logLevel: "INFO", correlationID: uuid.NewString()}
+	} else if correlationID == "" {
+		context = &Context{logLevel: logLevel, correlationID: uuid.NewString()}
 	} else {
 		context = &Context{logLevel: logLevel, correlationID: correlationID}
 	}

@@ -2,10 +2,10 @@ package spp_logger_test
 
 import (
 	"bytes"
-
 	"time"
 
 	monkey "bou.ke/monkey"
+	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -13,13 +13,57 @@ import (
 )
 
 var _ = Describe("the strings package", func() {
-	It("Logs an info message with the correct config and context", func() {
+	It("has a context and configured log level set to INFO, logger logs INFO, WARNING, ERROR and CRITICAL messages", func() {
 		monkey.Patch(time.Now, func() time.Time {
 			return time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
 		})
 
 		var buf bytes.Buffer
 		context, _ := spp_logger.NewContext("INFO", "test_correlation_id")
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
+		}, context, "WARNING", &buf)
+		logger.Trace("test_message")
+		logger.Info("test_message")
+		logger.Warning("warning message")
+		logger.Error("error message")
+		logger.Critical("critical message")
+
+		logMessages, err := parseLogLines(buf.String())
+		Expect(err).To(BeNil())
+		// fmt.Println(logMessages)
+
+		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58+00:00"))
+		Expect(logMessages[0]["description"]).To(Equal("test_message"))
+		Expect(logMessages[0]["correlation_id"]).To(Equal("test_correlation_id"))
+		Expect(logMessages[0]["service"]).To(Equal("test_service"))
+		Expect(logMessages[0]["component"]).To(Equal("test_component"))
+		Expect(logMessages[0]["environment"]).To(Equal("test_environment"))
+		Expect(logMessages[0]["deployment"]).To(Equal("test_deployment"))
+		Expect(logMessages[0]["timezone"]).To(Equal("UTC"))
+
+		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
+		Expect(logMessages[0]["go_log_level"]).To(Equal("info"))
+		Expect(logMessages[1]["log_level"]).To(Equal("WARNING"))
+		Expect(logMessages[1]["go_log_level"]).To(Equal("warning"))
+		Expect(logMessages[2]["log_level"]).To(Equal("ERROR"))
+		Expect(logMessages[2]["go_log_level"]).To(Equal("error"))
+		// Expect(logMessages[3]["log_level"]).To(Equal("CRITICAL"))
+		Expect(logMessages[3]["go_log_level"]).To(Equal("error"))
+
+	})
+
+	It("Logs an info message with the correct config and no context", func() {
+		monkey.Patch(time.Now, func() time.Time {
+			return time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
+		})
+
+		context, _ := spp_logger.NewContext("", "")
+		var buf bytes.Buffer
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
@@ -35,7 +79,8 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58+00:00"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
-		Expect(logMessages[0]["correlation_id"]).To(Equal("test_correlation_id"))
+		_, err = uuid.Parse(logMessages[0]["correlation_id"])
+		Expect(err).To(BeNil())
 		Expect(logMessages[0]["service"]).To(Equal("test_service"))
 		Expect(logMessages[0]["component"]).To(Equal("test_component"))
 		Expect(logMessages[0]["environment"]).To(Equal("test_environment"))
@@ -43,93 +88,23 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["timezone"]).To(Equal("UTC"))
 	})
 
-	// It("Logs an info message with the correct config and no context", func() {
-	// 	monkey.Patch(time.Now, func() time.Time {
-	// 		return time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
-	// 	})
+	It("has a context and configured log level set to DEBUG, logs a debug message with the correct message", func() {
+		var buf bytes.Buffer
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
+		}, nil, "DEBUG", &buf)
+		logger.Debug("test_message")
 
-	// 	context, _ := spp_logger.NewContext("", "")
-	// 	var buf bytes.Buffer
-	// 	logger, _ := spp_logger.NewLogger(spp_logger.Config{
-	// 		Service:     "test_service",
-	// 		Component:   "test_component",
-	// 		Environment: "test_environment",
-	// 		Deployment:  "test_deployment",
-	// 		Timezone:    "UTC",
-	// 	}, context, "INFO", &buf)
-	// 	logger.Info("test_message")
+		logMessages, err := parseLogLines(buf.String())
+		Expect(err).To(BeNil())
 
-	// 	logMessages, err := parseLogLines(buf.String())
-	// 	Expect(err).To(BeNil())
+		Expect(logMessages[0]["log_level"]).To(Equal("DEBUG"))
+		Expect(logMessages[0]["go_log_level"]).To(Equal("debug"))
+		Expect(logMessages[0]["description"]).To(Equal("test_message"))
+	})
 
-	// 	Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
-	// 	Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58Z"))
-	// 	Expect(logMessages[0]["description"]).To(Equal("test_message"))
-	// 	Expect(logMessages[0]["correlation_id"]).To(Equal("test_correlation_id"))
-	// 	Expect(logMessages[0]["service"]).To(Equal("test_service"))
-	// 	Expect(logMessages[0]["component"]).To(Equal("test_component"))
-	// 	Expect(logMessages[0]["environment"]).To(Equal("test_environment"))
-	// 	Expect(logMessages[0]["deployment"]).To(Equal("test_deployment"))
-	// 	Expect(logMessages[0]["timezone"]).To(Equal("UTC"))
-	// })
-
-	// 	It("Logs a warning message with the correct message", func() {
-	// 		var buf bytes.Buffer
-	// 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
-	// 			Service:     "test_service",
-	// 			Component:   "test_component",
-	// 			Environment: "test_environment",
-	// 			Deployment:  "test_deployment",
-	// 			Timezone:    "UTC",
-	// 		}, nil, "DEBUG", &buf)
-	// 		logger.Trace("test_message")
-
-	// 		logMessages, err := parseLogLines(buf.String())
-	// 		Expect(err).To(BeNil())
-
-	// 		Expect(logMessages[0]["log_level"]).To(Equal("DEBUG"))
-	// 		Expect(logMessages[0]["go_log_level"]).To(Equal("trace"))
-	// 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
-
-	// 	})
-
-	// 	It("Logs a fatal message with the correct message", func() {
-	// 		var buf bytes.Buffer
-	// 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
-	// 			Service:     "test_service",
-	// 			Component:   "test_component",
-	// 			Environment: "test_environment",
-	// 			Deployment:  "test_deployment",
-	// 			Timezone:    "UTC",
-	// 		}, nil, "INFO", &buf)
-	// 		logger.Error("test_message")
-
-	// 		logMessages, err := parseLogLines(buf.String())
-	// 		Expect(err).To(BeNil())
-
-	// 		Expect(logMessages[0]["log_level"]).To(Equal("ERROR"))
-	// 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
-
-	// 	})
-
-	// 	It("works for multiple logs", func() {
-	// 		monkey.Patch(time.Now, func() time.Time {
-	// 			return time.Date(2009, 11, 17, 20, 34, 58, 651387237, time.UTC)
-	// 		})
-
-	// 		var buf bytes.Buffer
-	// 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
-	// 			Service:     "test_service",
-	// 			Component:   "test_component",
-	// 			Environment: "test_environment",
-	// 			Deployment:  "test_deployment",
-	// 			Timezone:    "UTC",
-	// 		}, nil, "INFO", &buf)
-	// 		logger.Info("test_message")
-	// 		logger.Info("second_test_message")
-
-	// 		logMessagess, err := parseLogLines(buf.String())
-	// 		Expect(err).To(BeNil())
-	// 		Expect(logMessagess[0]["log_level"]).To(Equal("INFO"))
-	// 	})
 })
