@@ -7,7 +7,9 @@ import (
 )
 
 func main() {
-	context, _ := spp_logger.NewContext("INFO", "uuid.NewString()")
+	contextInfo, _ := spp_logger.NewContext("INFO", "uuid.NewString()")
+	contextDebug, _ := spp_logger.NewContext("DEBUG", "uuid.NewString()")
+
 	config := spp_logger.Config{
 		Service:     "test_service",
 		Component:   "test_component",
@@ -15,9 +17,10 @@ func main() {
 		Deployment:  "test_deployment",
 		Timezone:    "UTC",
 	}
-	logger, _ := spp_logger.NewLogger(config, context, "WARNING", os.Stdout)
 
-	logger.Debug("This debug message should not be visible")
+	logger, _ := spp_logger.NewLogger(config, contextInfo, "WARNING", os.Stdout)
+
+	logger.Debug("This debug message ========should not======== be visible")
 
 	logger.Info("Got to love an info message")
 
@@ -26,5 +29,9 @@ func main() {
 	logger.Error("Error Log")
 
 	logger.Critical("Critical log")
+
+	logger, _ = spp_logger.NewLogger(config, contextDebug, "WARNING", os.Stdout)
+
+	logger.Debug("This debug message ========should======== be visible")
 
 }
