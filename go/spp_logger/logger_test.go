@@ -2,6 +2,7 @@ package spp_logger_test
 
 import (
 	"bytes"
+	"fmt"
 	"time"
 
 	monkey "bou.ke/monkey"
@@ -32,10 +33,11 @@ var _ = Describe("the strings package", func() {
 		logger.Warning("warning message")
 		logger.Error("error message")
 		logger.Critical("critical message")
+		logger.Error("error message")
 
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
-		// fmt.Println(logMessages)
+		fmt.Println(logMessages)
 
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58+00:00"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
@@ -52,8 +54,10 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[1]["go_log_level"]).To(Equal("warning"))
 		Expect(logMessages[2]["log_level"]).To(Equal("ERROR"))
 		Expect(logMessages[2]["go_log_level"]).To(Equal("error"))
-		// Expect(logMessages[3]["log_level"]).To(Equal("CRITICAL"))
+		Expect(logMessages[3]["log_level"]).To(Equal("CRITICAL"))
 		Expect(logMessages[3]["go_log_level"]).To(Equal("error"))
+		Expect(logMessages[4]["log_level"]).To(Equal("ERROR"))
+		Expect(logMessages[4]["go_log_level"]).To(Equal("error"))
 	})
 
 	It("Logs an info message with the correct config and no context", func() {
@@ -106,16 +110,17 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
 	})
 
-	It("SetContext method works successfully", func() {
+	It("Override method works successfully", func() {
 		var buf bytes.Buffer
+		context, _ := spp_logger.NewContext("INFO", "ID")
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, nil, "INFO", &buf)
-		context, _ := spp_logger.NewContext("DEBUG", "ID")
+		}, context, "DEBUG", &buf)
+		context, _ = spp_logger.NewContext("DEBUG", "ID")
 
 		logger.Debug("test_message_fail")
 
@@ -128,6 +133,8 @@ var _ = Describe("the strings package", func() {
 
 		Expect(logMessages[0]["log_level"]).To(Equal("DEBUG"))
 		Expect(logMessages[0]["go_log_level"]).To(Equal("debug"))
+		Expect(logMessages[0]["configured_log_level"]).To(Equal("DEBUG"))
+
 		Expect(logMessages[0]["description"]).To(Equal("test_message_success"))
 
 	})

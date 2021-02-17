@@ -51,7 +51,11 @@ func (context *Context) Fire(entry *logrus.Entry) error {
 		"correlation_id":       context.CorrelationID(),
 		"configured_log_level": context.LogLevel(),
 	}
-	addFieldsToEntry(fields, entry)
+	if _, ok := entry.Data["correlation_id"]; !ok {
+		addFieldsToEntry(fields, entry)
+	} else {
+		updateEntryFields(fields, entry)
+	}
 	return nil
 }
 

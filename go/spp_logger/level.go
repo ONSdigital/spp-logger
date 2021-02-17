@@ -58,13 +58,25 @@ func ValidLevel(level string) bool {
 	return false
 }
 
-type levelHook struct{}
+type levelHook struct{ CurrentLogLevel string }
 
 func (hook *levelHook) Fire(entry *logrus.Entry) error {
 	fields := logrus.Fields{
 		"log_level": WriteLevel(entry.Level),
 	}
-	addFieldsToEntry(fields, entry)
+
+	if hook.CurrentLogLevel == "CRITICAL" {
+		fields = logrus.Fields{
+			"log_level": hook.CurrentLogLevel,
+		}
+		hook.CurrentLogLevel = ""
+	}
+
+	if _, ok := entry.Data["log_level"]; !ok {
+		addFieldsToEntry(fields, entry)
+	} else {
+		updateEntryFields(fields, entry)
+	}
 	return nil
 }
 

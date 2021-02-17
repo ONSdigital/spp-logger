@@ -1,8 +1,6 @@
 package spp_logger
 
 import (
-	// "log"
-
 	"io"
 
 	"github.com/sirupsen/logrus"
@@ -54,29 +52,34 @@ func NewLogger(config Config, context *Context, logLevel string, output io.Write
 	return sppLogger, nil
 }
 
-func (sppLogger *Logger) setContext(context *Context) error {
+func (sppLogger *Logger) setContext(context *Context) (*Logger, error) {
 	sppLogger.SetLevel(LoadLevel(context.LogLevel()))
 	sppLogger.AddHook(context)
-	return nil
+	return sppLogger, nil
 }
 
-func (sppLogger *Logger) OverrideContext(context *Context) {
+func (sppLogger *Logger) OverrideContext(context *Context) *Logger {
 	mainContext := sppLogger.Context
-	err := sppLogger.setContext(context)
+	newContext, err := sppLogger.setContext(context)
 	if err != nil {
 		sppLogger.setContext(mainContext)
 	}
+	return newContext
 }
 
 func (sppLogger *Logger) Critical(args ...interface{}) {
+	sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
 	sppLogger.Error(args...)
+
 }
 
 func (sppLogger *Logger) Criticalf(format string, args ...interface{}) {
+	// sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
 	sppLogger.Errorf(format, args...)
 }
 
 func (sppLogger *Logger) CriticalFn(fn logrus.LogFunction) {
+	// sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
 	sppLogger.ErrorFn(fn)
 }
 
@@ -101,5 +104,11 @@ func addFieldsToEntry(fields logrus.Fields, entry *logrus.Entry) {
 		if _, ok := entry.Data[field]; !ok {
 			entry.Data[field] = value
 		}
+	}
+}
+
+func updateEntryFields(fields logrus.Fields, entry *logrus.Entry) {
+	for field, value := range fields {
+		entry.Data[field] = value
 	}
 }

@@ -32,8 +32,5 @@ func main() {
 
 	logger.OverrideContext(contextDebug)
 
-	// logger, _ = spp_logger.NewLogger(config, contextDebug, "WARNING", os.Stdout)
-
 	logger.Debug("This debug message ========should======== be visible")
-
 }
