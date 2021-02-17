@@ -30,7 +30,9 @@ func main() {
 
 	logger.Critical("Critical log")
 
-	logger, _ = spp_logger.NewLogger(config, contextDebug, "WARNING", os.Stdout)
+	logger.OverrideContext(contextDebug)
+
+	// logger, _ = spp_logger.NewLogger(config, contextDebug, "WARNING", os.Stdout)
 
 	logger.Debug("This debug message ========should======== be visible")
 

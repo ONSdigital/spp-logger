@@ -54,6 +54,20 @@ func NewLogger(config Config, context *Context, logLevel string, output io.Write
 	return sppLogger, nil
 }
 
+func (sppLogger *Logger) setContext(context *Context) error {
+	sppLogger.SetLevel(LoadLevel(context.LogLevel()))
+	sppLogger.AddHook(context)
+	return nil
+}
+
+func (sppLogger *Logger) OverrideContext(context *Context) {
+	mainContext := sppLogger.Context
+	err := sppLogger.setContext(context)
+	if err != nil {
+		sppLogger.setContext(mainContext)
+	}
+}
+
 func (sppLogger *Logger) Critical(args ...interface{}) {
 	sppLogger.Error(args...)
 }
