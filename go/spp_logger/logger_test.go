@@ -6,11 +6,11 @@ import (
 	"time"
 
 	monkey "bou.ke/monkey"
+
+	"github.com/ONSDigital/spp-logger/go/spp_logger"
 	"github.com/google/uuid"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"github.com/ONSDigital/spp-logger/go/spp_logger"
 )
 
 var _ = Describe("the strings package", func() {

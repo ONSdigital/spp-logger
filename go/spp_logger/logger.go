@@ -10,7 +10,7 @@ type Logger struct {
 	logrus.Logger
 	Config   Config
 	Name     string
-	Context  *Context
+	context  Context
 	LogLevel string
 }
 
@@ -18,7 +18,7 @@ type ConfigHook struct {
 	Config *Config
 }
 
-func NewLogger(config Config, context *Context, logLevel string, output io.Writer) (*Logger, error) {
+func NewLogger(config Config, context Context, logLevel string, output io.Writer) (*Logger, error) {
 	if context == nil {
 		context, _ = NewContext(logLevel, "")
 	}
@@ -29,7 +29,7 @@ func NewLogger(config Config, context *Context, logLevel string, output io.Write
 
 	sppLogger := &Logger{
 		Config:  config,
-		Context: context,
+		context: context,
 	}
 
 	sppLogger.SetFormatter(&logrus.JSONFormatter{
@@ -52,14 +52,14 @@ func NewLogger(config Config, context *Context, logLevel string, output io.Write
 	return sppLogger, nil
 }
 
-func (sppLogger *Logger) setContext(context *Context) (*Logger, error) {
+func (sppLogger *Logger) setContext(context Context) (*Logger, error) {
 	sppLogger.SetLevel(LoadLevel(context.LogLevel()))
 	sppLogger.AddHook(context)
 	return sppLogger, nil
 }
 
-func (sppLogger *Logger) OverrideContext(context *Context) *Logger {
-	mainContext := sppLogger.Context
+func (sppLogger *Logger) OverrideContext(context Context) *Logger {
+	mainContext := sppLogger.context
 	newContext, err := sppLogger.setContext(context)
 	if err != nil {
 		sppLogger.setContext(mainContext)
@@ -74,12 +74,12 @@ func (sppLogger *Logger) Critical(args ...interface{}) {
 }
 
 func (sppLogger *Logger) Criticalf(format string, args ...interface{}) {
-	// sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
+	sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
 	sppLogger.Errorf(format, args...)
 }
 
 func (sppLogger *Logger) CriticalFn(fn logrus.LogFunction) {
-	// sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
+	sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
 	sppLogger.ErrorFn(fn)
 }
 
