@@ -5,15 +5,22 @@ A collection of logging libraries to implement standardised logging.
 ## Implementation languages
 
 - [Python](/python)
+- [Go](/go)
+
+## Example Implementation
+
+- [Python](/python/examples/example.py)
+- [Go](/go/examples/example.go)
 
 ## Logging spec
 
 ### Inter-process communication
 
-- Three compulsory attributes:
+- Two compulsory attributes:
     - **log_correlation_id** - This is the correlation value (based on GUID, but may have other details encoded into it)
-    - **log_correlation_type** - describes the type of correlation we are using e.g. workflow ID, survey ID etc. - THIS WAS ADDED 20/11/2020
     - **log_level** - standard python logging levels (Critical/Error/Warning/Info/Debug)
+- Non-compulsory attribute:
+    - **log_correlation_type** - describes the type of correlation we are using e.g. workflow ID, survey ID etc. - THIS WAS ADDED 20/11/2020
 - These attributes are:
     - defined by the initiating function/process.
     - held in a JSON structure
