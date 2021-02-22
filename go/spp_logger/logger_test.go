@@ -2,7 +2,6 @@ package spp_logger_test
 
 import (
 	"bytes"
-	"fmt"
 	"time"
 
 	monkey "bou.ke/monkey"
@@ -37,7 +36,6 @@ var _ = Describe("the strings package", func() {
 
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
-		fmt.Println(logMessages)
 
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58+00:00"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))

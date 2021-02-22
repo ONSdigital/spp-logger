@@ -32,7 +32,6 @@ func NewContext(logLevel, correlationID string) (Context, error) {
 	var context Context
 	if logLevel == "" && correlationID == "" {
 		context = Context{"logLevel": "INFO", "correlationID": uuid.NewString()}
-		fmt.Println(context["logLevel"])
 	} else if correlationID == "" {
 		context = Context{"logLevel": logLevel, "correlationID": uuid.NewString()}
 	} else {

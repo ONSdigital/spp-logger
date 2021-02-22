@@ -1,0 +1,129 @@
+# SPP Logger - Go
+
+A go log handler to ship standardised logs.
+
+## Installation
+
+`go get github.com/ONSDigital/spp-logger/go/spp_logger`
+
+## Usage
+
+### Quickstart
+
+When creating an instance of the logger it will need a `config`, a `context`, a `correlation ID` and a `stream` 
+
+```go
+import (
+	"os"
+
+	"github.com/ONSDigital/spp-logger/go/spp_logger"
+)
+
+func main() {
+    context, _ := spp_logger.NewContext("INFO", "correlation id")
+    
+    config := spp_logger.Config{
+            Service:     "test_service",
+            Component:   "test_component",
+            Environment: "test_environment",
+            Deployment:  "test_deployment",
+            Timezone:    "UTC",
+        }
+        
+    logger, _ := spp_logger.NewLogger(config, context, "WARNING", os.Stdout)
+    
+    logger.info("Function started")
+}
+```
+
+
+### LoggerConfig
+
+**Args**:
+
+| Argument    | Type | ENV var           | Default                                                                      |
+|-------------|------|-------------------|------------------------------------------------------------------------------|
+| service     | str  | `SPP_SERVICE`     | N/A                                                                          |
+| component   | str  | `SPP_COMPONENT`   | N/A                                                                          |
+| environment | str  | `SPP_ENVIRONMENT` | N/A                                                                          |
+| deployment  | str  | `SPP_DEPLOYMENT`  | N/A                                                                          |
+| timezone    | str  | `TIMEZONE`        | `UTC`                                                                        |
+
+
+### Logger
+
+| Argument  | Type              | Default                                                                                                                               |
+|-----------|-------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| config    | SPPLoggerConfig   | `UTC`                                                                                                                                 |
+| context   | map[string]string | `None` - Will generate a context in the form `{"log_correlation_id": uuid, log_level": log_level}` |
+| log_level | int               | `logging.INFO` - This is only used if `context` values are empty                                                      |
+| stream    | IO                | `sys.stdout`                                                                                                                          |
+
+#### Logging with extra custom attributes
+
+**Note**: If an attribute name overlaps with a context, the context always takes preference.
+
+
+### SPPHandler
+
+| Argument  | Type            | Default                                                                                                                               |
+|-----------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| config    | SPPLoggerConfig | `UTC`                                                                                                                                 |
+| context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_correlation_type": type, log_level": log_level}` |
+| log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                                                      |
+| stream    | IO              | `sys.stdout`                                                                                                                          |
+
+### Context
+
+A context must be a map[string]string with the properties `log_correlation_id` and `log_level`.
+
+The intention of a context is that the initialising process will configure it and pass it down to any other
+initialisations. As a result of this logs can be correlated using the `log_correlation_id` and the `log_level`
+is auto set based on the top level initialisation. This works particularly well with serverless constructs where
+your module and function is effectively the same thing.
+
+Example:
+
+```go
+import (
+	"os"
+
+	"github.com/ONSDigital/spp-logger/go/spp_logger"
+)
+
+func main() {
+    context, _ := spp_logger.NewContext("INFO", "correlation id")
+    
+    config := spp_logger.Config{
+            Service:     "test_service",
+            Component:   "test_component",
+            Environment: "test_environment",
+            Deployment:  "test_deployment",
+            Timezone:    "UTC",
+        }
+        
+    logger, _ := spp_logger.NewLogger(config, context, "WARNING", os.Stdout)
+    
+    logger.info("Function started")
+}
+```
+
+Result:
+```json
+{"component":"test_component","configured_log_level":"INFO","correlation_id":"correlation id","deployment":"test_deployment","description":"Got to love an info message","environment":"test_environment","go_log_level":"info","log_level":"INFO","service":"test_service","timestamp":"2021-02-22T10:46:17+00:00","timezone":"UTC"}
+```
+
+However this may not be the desired behaviour in long running app as your `context` is separate
+from your apps lifecycle.
+
+In this instance it is recommended that you pass your desired context to your calling application.
+
+Example:
+
+```go
+func my_function(context){
+    logger.override_context(context)
+    logger.info("Started my_function")
+    ...
+}
+```
