@@ -10,7 +10,7 @@ A go log handler to ship standardised logs.
 
 ### Quickstart
 
-When creating an instance of the logger it will need a `config`, a `context`, a `correlation ID` and a `stream` 
+When creating an instance of the logger it will need a `config`, a `context`, a `log_level` and a `stream` 
 
 ```go
 import (
@@ -59,19 +59,9 @@ func main() {
 | log_level | int               | `logging.INFO` - This is only used if `context` values are empty                                                      |
 | stream    | IO                | `sys.stdout`                                                                                                                          |
 
-#### Logging with extra custom attributes
 
 **Note**: If an attribute name overlaps with a context, the context always takes preference.
-
-
-### SPPHandler
-
-| Argument  | Type            | Default                                                                                                                               |
-|-----------|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| config    | SPPLoggerConfig | `UTC`                                                                                                                                 |
-| context   | immutables.Map  | `None` - Will auto generate a context in the form `{"log_correlation_id": uuid, "log_correlation_type": type, log_level": log_level}` |
-| log_level | int             | `logging.INFO` - This is only used if `context` is set to `None`                                                                      |
-| stream    | IO              | `sys.stdout`                                                                                                                          |
+                                                                                                        |
 
 ### Context
 
