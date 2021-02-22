@@ -4,13 +4,8 @@ A collection of logging libraries to implement standardised logging.
 
 ## Implementation languages
 
-- [Python](/python)
-- [Go](/go)
-
-## Example Implementation
-
-- [Python](/python/examples/example.py)
-- [Go](/go/examples/example.go)
+- [Python](/python) - [Example Implementation](/python/examples/example.py)
+- [Go](/go) - [Example Implementation](/go/examples/example.go)
 
 ## Logging spec
 
