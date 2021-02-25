@@ -31,7 +31,7 @@ var _ = Describe("#NewContext", func() {
 	Context("When no log level is set, just a correlation id", func() {
 		It("Should return an error", func() {
 			context, err := spp_logger.NewContext("", "correlation_id")
-			Expect(err).To(MatchError("Context field missing, must set `logLevel` and `correlationID`"))
+			Expect(err).To(MatchError("Context field missing, must set `logLevel` and `correlation_id`"))
 			Expect(context).To(BeNil())
 		})
 	})

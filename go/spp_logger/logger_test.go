@@ -110,7 +110,7 @@ var _ = Describe("the strings package", func() {
 
 	It("has an extended context and configured log level set to INFO, logs an INFO message with the correct message", func() {
 		var buf bytes.Buffer
-		context := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
+		context := map[string]string{"logLevel": "INFO", "correlation_id": "test_id", "survey": "survey", "period": "period"}
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",

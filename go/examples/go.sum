@@ -13,6 +13,8 @@ github.com/ONSDigital/spp-logger/go/spp_logger v0.0.0-20210217141120-4282bca92cf
 github.com/ONSDigital/spp-logger/go/spp_logger v0.0.0-20210217141120-4282bca92cf1/go.mod h1:e/biXGTc7/n2zT5DhpQv9ARqDHezQk9iviDkNdWCxSg=
 github.com/ONSDigital/spp-logger/go/spp_logger v0.0.0-20210219150919-2ddbf241d44a h1:zTHJ+/IcF70gO1ldRtaqHYfafhkvtJiWPKJwDlaKYFk=
 github.com/ONSDigital/spp-logger/go/spp_logger v0.0.0-20210219150919-2ddbf241d44a/go.mod h1:e/biXGTc7/n2zT5DhpQv9ARqDHezQk9iviDkNdWCxSg=
+github.com/ONSDigital/spp-logger/go/spp_logger v0.0.0-20210225144349-4357d137071a h1:LwU/a9JBaA5gYQhmpsLURJsrnIjGFZkdB3RN+80AHLA=
+github.com/ONSDigital/spp-logger/go/spp_logger v0.0.0-20210225144349-4357d137071a/go.mod h1:e/biXGTc7/n2zT5DhpQv9ARqDHezQk9iviDkNdWCxSg=
 github.com/akavel/rsrc v0.8.0/go.mod h1:uLoCtb9J+EyAqh+26kdrTgmzRBFPGOolLWKpdxkKq+c=
 github.com/certifi/gocertifi v0.0.0-20180118203423-deb3ae2ef261/go.mod h1:GJKEexRPVJrBSOjoqN5VNOIKJ5Q3RViH6eu3puDRwx4=
 github.com/cloudflare/backoff v0.0.0-20161212185259-647f3cdfc87a/go.mod h1:rzgs2ZOiguV6/NpiDgADjRLPNyZlApIWxKpkT+X8SdY=

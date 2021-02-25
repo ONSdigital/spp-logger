@@ -7,7 +7,10 @@ import (
 )
 
 func main() {
+	// create context using a map[string]string
 	contextInfo := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
+
+	// create a context using NewContext method
 	contextDebug, _ := spp_logger.NewContext("DEBUG", "uuid.NewString()")
 
 	config := spp_logger.Config{
