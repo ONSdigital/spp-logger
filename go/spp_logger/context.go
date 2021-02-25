@@ -45,6 +45,7 @@ func NewContext(logLevel, correlationID string) (Context, error) {
 }
 
 func (context Context) Fire(entry *logrus.Entry) error {
+	contextKeys := context.Keys()
 	fields := logrus.Fields{
 		"correlation_id":       context.CorrelationID(),
 		"configured_log_level": context.LogLevel(),
@@ -54,9 +55,30 @@ func (context Context) Fire(entry *logrus.Entry) error {
 	} else {
 		updateEntryFields(fields, entry)
 	}
+	for _, element := range contextKeys {
+		field := logrus.Fields{
+			element: context[element],
+		}
+		if _, ok := entry.Data[element]; !ok {
+			addFieldsToEntry(field, entry)
+		} else {
+			updateEntryFields(field, entry)
+		}
+	}
 	return nil
 }
 
 func (context Context) Levels() []logrus.Level {
 	return logrus.AllLevels
+}
+
+func (context Context) Keys() []string {
+	keys := make([]string, len(context))
+	i := 0
+	for k := range context {
+		keys[i] = k
+		i++
+	}
+
+	return keys
 }

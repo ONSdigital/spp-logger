@@ -89,7 +89,7 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["timezone"]).To(Equal("UTC"))
 	})
 
-	It("has a context and configured log level set to DEBUG, logs a debug message with the correct message", func() {
+	It("has nil context and configured log level set to DEBUG, logs a debug message with the correct message", func() {
 		var buf bytes.Buffer
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
@@ -106,6 +106,29 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["log_level"]).To(Equal("DEBUG"))
 		Expect(logMessages[0]["go_log_level"]).To(Equal("debug"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
+	})
+
+	It("has an extended context and configured log level set to INFO, logs an INFO message with the correct message", func() {
+		var buf bytes.Buffer
+		context := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
+		}, context, "DEBUG", &buf)
+		logger.Info("test_message")
+
+		logMessages, err := parseLogLines(buf.String())
+		Expect(err).To(BeNil())
+
+		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
+		Expect(logMessages[0]["go_log_level"]).To(Equal("info"))
+		Expect(logMessages[0]["description"]).To(Equal("test_message"))
+		Expect(logMessages[0]["correlation_id"]).To(Equal("test_id"))
+		Expect(logMessages[0]["survey"]).To(Equal("survey"))
+		Expect(logMessages[0]["period"]).To(Equal("period"))
 	})
 
 	It("Override method works successfully", func() {
