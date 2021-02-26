@@ -73,18 +73,18 @@ initialisations. As a result of this logs can be correlated using the `log_corre
 is auto set based on the top level initialisation. This works particularly well with serverless constructs where
 your module and function is effectively the same thing.
 
-Example set context with additional fields, these additional fields will be logged:
+####Example set context with additional fields, these additional fields will be logged:
 
 ```go
 context := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
 
 ```
-Example new context with correlation_id and log_level passed in:
+####Example new context with correlation_id and log_level passed in:
 ```go
 context, _ := spp_logger.NewContext("DEBUG", "uuid.NewString()")
 
 ```
-Example new context with no parameters passed in, returns and INFO level and a random uuid correlation_id:
+####Example new context with no parameters passed in, returns and INFO level and a random uuid correlation_id:
 
 ```go
 context, _ := spp_logger.NewContext("", "")
