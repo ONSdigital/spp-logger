@@ -59,6 +59,7 @@ func main() {
 | log_level | int               | `logging.INFO` - This is only used if `context` values are empty                                                      |
 | stream    | IO                | `sys.stdout`                                                                                                                          |
 
+The logger contains a `go_log_level`, this is because there is no critical level in go, so we set a hook which is actually an error log. This means when a critical log is called the `go_log_level` will be `ERROR` wheras the `log_level` will be critical. This is to be in keeping with the other loggers.
 
 **Note**: If an attribute name overlaps with a context, the context always takes preference.
                                                                                                         |
@@ -72,7 +73,7 @@ initialisations. As a result of this logs can be correlated using the `log_corre
 is auto set based on the top level initialisation. This works particularly well with serverless constructs where
 your module and function is effectively the same thing.
 
-Example set context with additional fields:
+Example set context with additional fields, these additional fields will be logged:
 
 ```go
 context := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
@@ -92,7 +93,7 @@ context, _ := spp_logger.NewContext("", "")
 
 
 
-Result:
+Log Result:
 ```json
 {"component":"test_component","configured_log_level":"INFO","correlation_id":"correlation id","deployment":"test_deployment","description":"Got to love an info message","environment":"test_environment","go_log_level":"info","log_level":"INFO","service":"test_service","timestamp":"2021-02-22T10:46:17+00:00","timezone":"UTC"}
 ```
@@ -111,3 +112,4 @@ func my_function(context){
     ...
 }
 ```
+
