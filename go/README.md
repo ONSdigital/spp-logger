@@ -65,38 +65,32 @@ func main() {
 
 ### Context
 
-A context must be a map[string]string with the properties `log_correlation_id` and `log_level`.
+A context must be a map[string]string and must contain the properties `log_correlation_id` and `log_level`.
 
 The intention of a context is that the initialising process will configure it and pass it down to any other
 initialisations. As a result of this logs can be correlated using the `log_correlation_id` and the `log_level`
 is auto set based on the top level initialisation. This works particularly well with serverless constructs where
 your module and function is effectively the same thing.
 
-Example:
+Example set context with additional fields:
 
 ```go
-import (
-	"os"
+context := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
 
-	"github.com/ONSDigital/spp-logger/go/spp_logger"
-)
-
-func main() {
-    context, _ := spp_logger.NewContext("INFO", "correlation id")
-    
-    config := spp_logger.Config{
-            Service:     "test_service",
-            Component:   "test_component",
-            Environment: "test_environment",
-            Deployment:  "test_deployment",
-            Timezone:    "UTC",
-        }
-        
-    logger, _ := spp_logger.NewLogger(config, context, "WARNING", os.Stdout)
-    
-    logger.info("Function started")
-}
 ```
+Example new context with correlation_id and log_level passed in:
+```go
+context, _ := spp_logger.NewContext("DEBUG", "uuid.NewString()")
+
+```
+Example new context with no parameters passed in, returns and INFO level and a random uuid correlation_id:
+
+```go
+context, _ := spp_logger.NewContext("", "")
+
+```
+
+
 
 Result:
 ```json
