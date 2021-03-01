@@ -22,7 +22,6 @@ func NewLogger(config Config, context Context, logLevel string, output io.Writer
 	if context == nil {
 		context, _ = NewContext(logLevel, "")
 	}
-
 	if err := context.IsValid(); err != nil {
 		return nil, err
 	}

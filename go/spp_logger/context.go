@@ -51,6 +51,11 @@ func (context Context) Fire(entry *logrus.Entry) error {
 			field := logrus.Fields{
 				element: context[element],
 			}
+			if element == "logLevel" {
+				field = logrus.Fields{
+					"configured_log_level": context.LogLevel(),
+				}
+			}
 			if _, ok := entry.Data[element]; !ok {
 				addFieldsToEntry(field, entry)
 			} else {
