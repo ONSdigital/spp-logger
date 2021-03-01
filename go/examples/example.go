@@ -7,12 +7,11 @@ import (
 )
 
 func main() {
-	// create context using a map[string]string
-	contextInfo := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
-
 	// create a context using NewContext method
-	contextDebug, _ := spp_logger.NewContext("DEBUG", "uuid.NewString()")
+	context, _ := spp_logger.NewContext("INFO", "uuid.NewString()")
 
+	// create context using a map[string]string
+	contextDebug := map[string]string{"logLevel": "DEBUG", "correlation_id": "test_id", "survey": "survey", "period": "period"}
 	config := spp_logger.Config{
 		Service:     "test_service",
 		Component:   "test_component",
@@ -21,7 +20,7 @@ func main() {
 		Timezone:    "UTC",
 	}
 
-	logger, _ := spp_logger.NewLogger(config, contextInfo, "WARNING", os.Stdout)
+	logger, _ := spp_logger.NewLogger(config, context, "DEBUG", os.Stdout)
 
 	logger.Debug("This debug message ========should not======== be visible")
 
@@ -31,7 +30,10 @@ func main() {
 
 	logger.Error("Error Log")
 
-	logger.Critical("Critical log")
+	// Adding an attribute to the context
+	logger.SetContextAttribute("survey", "survey")
+
+	logger.Critical("Critical log with a survey field")
 
 	logger.OverrideContext(contextDebug)
 

@@ -133,7 +133,7 @@ var _ = Describe("the strings package", func() {
 
 	It("Override method works successfully", func() {
 		var buf bytes.Buffer
-		context, _ := spp_logger.NewContext("INFO", "ID")
+		context := map[string]string{"logLevel": "INFO", "correlation_id": "test_id", "survey": "survey", "period": "period"}
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
