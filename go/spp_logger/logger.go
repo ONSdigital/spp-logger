@@ -67,6 +67,17 @@ func (sppLogger *Logger) OverrideContext(context Context) *Logger {
 	return newContext
 }
 
+func (sppLogger *Logger) SetContextAttribute(attribute, value string) *Logger {
+	mainContext := sppLogger.context
+	context := sppLogger.context
+	context[attribute] = value
+	newContext, err := sppLogger.setContext(context)
+	if err != nil {
+		sppLogger.setContext(mainContext)
+	}
+	return newContext
+}
+
 func (sppLogger *Logger) Critical(args ...interface{}) {
 	sppLogger.AddHook(&levelHook{CurrentLogLevel: "CRITICAL"})
 	sppLogger.Error(args...)

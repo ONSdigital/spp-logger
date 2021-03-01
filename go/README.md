@@ -91,6 +91,14 @@ context, _ := spp_logger.NewContext("", "")
 
 ```
 
+#### Updating context attributes
+
+Context attributes are immutable, however it is possible to add new ones. All attributes on a context will appear in the logs.
+
+```go
+logger.SetContextAttribute("my_new_attribute", "my_attribute_value")
+```
+
 
 
 Log Result:

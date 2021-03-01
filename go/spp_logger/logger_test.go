@@ -159,4 +159,32 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["description"]).To(Equal("test_message_success"))
 
 	})
+
+	It("SetContextAttribute method works successfully", func() {
+		var buf bytes.Buffer
+		context, _ := spp_logger.NewContext("INFO", "ID")
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
+		}, context, "DEBUG", &buf)
+
+		logger.Info("test_info_message")
+
+		logMessages, err := parseLogLines(buf.String())
+		Expect(err).To(BeNil())
+
+		Expect(logMessages[0]["survey"]).To(Equal(""))
+
+		logger.SetContextAttribute("survey", "survey")
+
+		logger.Info("test_message_success")
+
+		logMessages, err = parseLogLines(buf.String())
+		Expect(err).To(BeNil())
+
+		Expect(logMessages[1]["survey"]).To(Equal("survey"))
+	})
 })
