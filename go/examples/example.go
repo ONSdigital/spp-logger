@@ -11,7 +11,7 @@ func main() {
 	context, _ := spp_logger.NewContext("INFO", "uuid.NewString()")
 
 	// create context using a map[string]string
-	contextDebug := map[string]string{"logLevel": "DEBUG", "correlation_id": "test_id", "survey": "survey", "period": "period"}
+	contextDebug := map[string]string{"log_level": "DEBUG", "correlation_id": "test_id", "survey": "survey", "period": "period"}
 	config := spp_logger.Config{
 		Service:     "test_service",
 		Component:   "test_component",
