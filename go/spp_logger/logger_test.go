@@ -189,26 +189,31 @@ var _ = Describe("the strings package", func() {
 
 	It("Takes in a context with `log_level` instead of `logLevel` and still works", func() {
 		var buf bytes.Buffer
-		context := map[string]string{"log_level": "INFO", "log_correlation_id": "test_id"}
-		contextDebug := map[string]string{"logLevel": "DEBUG", "correlation_id": "test_id"}
+		context := map[string]string{"logLevel": "WARNING", "log_correlation_id": "test_id"}
+		contextInfo := map[string]string{"logLevel": "INFO", "correlation_id": "test_id"}
+		contextDebug := map[string]string{"log_level": "DEBUG", "correlation_id": "test_id"}
+
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
 			Environment: "test_environment",
 			Deployment:  "test_deployment",
 			Timezone:    "UTC",
-		}, context, "DEBUG", &buf)
+		}, context, "CRITICAL", &buf)
 
+		logger.Critical("test_info_message")
+
+		logger.OverrideContext(contextInfo)
 		logger.Info("test_info_message")
-
 		logger.OverrideContext(contextDebug)
 		logger.Debug("test_debug_message")
 
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
 
-		Expect(logMessages[0]["configured_log_level"]).To(Equal("INFO"))
-		Expect(logMessages[1]["configured_log_level"]).To(Equal("DEBUG"))
+		Expect(logMessages[0]["configured_log_level"]).To(Equal("WARNING"))
+		Expect(logMessages[1]["configured_log_level"]).To(Equal("INFO"))
+		Expect(logMessages[2]["configured_log_level"]).To(Equal("DEBUG"))
 
 	})
 
