@@ -79,12 +79,12 @@ your module and function is effectively the same thing.
 context := map[string]string{"logLevel": "INFO", "correlationID": "test_id", "survey": "survey", "period": "period"}
 
 ```
-#### Example new context with correlation_id and log_level passed in:
+#### Example new context with log_correlation_id and log_level passed in:
 ```go
 context, _ := spp_logger.NewContext("DEBUG", "uuid.NewString()")
 
 ```
-#### Example new context with no parameters passed in, returns and INFO level and a random uuid correlation_id:
+#### Example new context with no parameters passed in, returns and INFO level and a random uuid log_correlation_id:
 
 ```go
 context, _ := spp_logger.NewContext("", "")
@@ -99,11 +99,14 @@ Context attributes are immutable, however it is possible to add new ones. All at
 logger.SetContextAttribute("my_new_attribute", "my_attribute_value")
 ```
 
-
+#### Returning context
+```go
+logger.Context()
+```
 
 Log Result:
 ```json
-{"component":"test_component","configured_log_level":"INFO","correlation_id":"correlation id","deployment":"test_deployment","description":"Got to love an info message","environment":"test_environment","go_log_level":"info","log_level":"INFO","service":"test_service","timestamp":"2021-02-22T10:46:17+00:00","timezone":"UTC"}
+{"component":"test_component","configured_log_level":"INFO","log_correlation_id":"correlation id","deployment":"test_deployment","description":"Got to love an info message","environment":"test_environment","go_log_level":"info","log_level":"INFO","service":"test_service","timestamp":"2021-02-22T10:46:17+00:00","timezone":"UTC"}
 ```
 
 However this may not be the desired behaviour in long running app as your `context` is separate

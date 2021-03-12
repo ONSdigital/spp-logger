@@ -19,6 +19,9 @@ type ConfigHook struct {
 }
 
 func NewLogger(config Config, context Context, logLevel string, output io.Writer) (*Logger, error) {
+	if context["log_level"] != "" {
+		context["logLevel"] = context["log_level"]
+	}
 	if context == nil {
 		context, _ = NewContext(logLevel, "")
 	}
@@ -121,4 +124,8 @@ func updateEntryFields(fields logrus.Fields, entry *logrus.Entry) {
 	for field, value := range fields {
 		entry.Data[field] = value
 	}
+}
+
+func (sppLogger *Logger) Context() Context {
+	return sppLogger.context
 }

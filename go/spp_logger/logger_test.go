@@ -19,7 +19,7 @@ var _ = Describe("the strings package", func() {
 		})
 
 		var buf bytes.Buffer
-		context, _ := spp_logger.NewContext("INFO", "test_correlation_id")
+		context, _ := spp_logger.NewContext("INFO", "test_log_correlation_id")
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
@@ -39,7 +39,7 @@ var _ = Describe("the strings package", func() {
 
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58+00:00"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
-		Expect(logMessages[0]["correlation_id"]).To(Equal("test_correlation_id"))
+		Expect(logMessages[0]["log_correlation_id"]).To(Equal("test_log_correlation_id"))
 		Expect(logMessages[0]["service"]).To(Equal("test_service"))
 		Expect(logMessages[0]["component"]).To(Equal("test_component"))
 		Expect(logMessages[0]["environment"]).To(Equal("test_environment"))
@@ -80,7 +80,7 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
 		Expect(logMessages[0]["timestamp"]).To(Equal("2009-11-17T20:34:58+00:00"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
-		_, err = uuid.Parse(logMessages[0]["correlation_id"])
+		_, err = uuid.Parse(logMessages[0]["log_correlation_id"])
 		Expect(err).To(BeNil())
 		Expect(logMessages[0]["service"]).To(Equal("test_service"))
 		Expect(logMessages[0]["component"]).To(Equal("test_component"))
@@ -110,7 +110,7 @@ var _ = Describe("the strings package", func() {
 
 	It("has an extended context and configured log level set to INFO, logs an INFO message with the correct message", func() {
 		var buf bytes.Buffer
-		context := map[string]string{"logLevel": "INFO", "correlation_id": "test_id", "survey": "survey", "period": "period"}
+		context := map[string]string{"logLevel": "INFO", "log_correlation_id": "test_id", "survey": "survey", "period": "period"}
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
@@ -126,14 +126,14 @@ var _ = Describe("the strings package", func() {
 		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
 		Expect(logMessages[0]["go_log_level"]).To(Equal("info"))
 		Expect(logMessages[0]["description"]).To(Equal("test_message"))
-		Expect(logMessages[0]["correlation_id"]).To(Equal("test_id"))
+		Expect(logMessages[0]["log_correlation_id"]).To(Equal("test_id"))
 		Expect(logMessages[0]["survey"]).To(Equal("survey"))
 		Expect(logMessages[0]["period"]).To(Equal("period"))
 	})
 
 	It("Override method works successfully", func() {
 		var buf bytes.Buffer
-		context := map[string]string{"logLevel": "INFO", "correlation_id": "test_id", "survey": "survey", "period": "period"}
+		context := map[string]string{"logLevel": "INFO", "log_correlation_id": "test_id", "survey": "survey", "period": "period"}
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
@@ -186,4 +186,39 @@ var _ = Describe("the strings package", func() {
 		Expect(err).To(BeNil())
 		Expect(logMessages[1]["survey"]).To(Equal("survey"))
 	})
+
+	It("Takes in a context with `log_level` instead of `logLevel` and still works", func() {
+		var buf bytes.Buffer
+		context := map[string]string{"log_level": "INFO", "log_correlation_id": "test_id"}
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
+		}, context, "DEBUG", &buf)
+
+		logger.Info("test_info_message")
+
+		logMessages, err := parseLogLines(buf.String())
+		Expect(err).To(BeNil())
+		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
+	})
+
+	It("Context method returns context", func() {
+		var buf bytes.Buffer
+		context := map[string]string{"logLevel": "INFO", "log_correlation_id": "test_id"}
+		logger, _ := spp_logger.NewLogger(spp_logger.Config{
+			Service:     "test_service",
+			Component:   "test_component",
+			Environment: "test_environment",
+			Deployment:  "test_deployment",
+			Timezone:    "UTC",
+		}, context, "DEBUG", &buf)
+
+		response := logger.Context()
+		Expect(response["logLevel"]).To(Equal(context["logLevel"]))
+		Expect(response["log_correlation_id"]).To(Equal(context["log_correlation_id"]))
+	})
+
 })
