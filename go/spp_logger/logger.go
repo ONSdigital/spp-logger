@@ -61,6 +61,9 @@ func (sppLogger *Logger) setContext(context Context) (*Logger, error) {
 }
 
 func (sppLogger *Logger) OverrideContext(context Context) *Logger {
+	if context["log_level"] != "" {
+		context["logLevel"] = context["log_level"]
+	}
 	mainContext := sppLogger.context
 	newContext, err := sppLogger.setContext(context)
 	if err != nil {

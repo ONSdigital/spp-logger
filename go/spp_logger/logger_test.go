@@ -190,6 +190,7 @@ var _ = Describe("the strings package", func() {
 	It("Takes in a context with `log_level` instead of `logLevel` and still works", func() {
 		var buf bytes.Buffer
 		context := map[string]string{"log_level": "INFO", "log_correlation_id": "test_id"}
+		contextDebug := map[string]string{"logLevel": "DEBUG", "correlation_id": "test_id"}
 		logger, _ := spp_logger.NewLogger(spp_logger.Config{
 			Service:     "test_service",
 			Component:   "test_component",
@@ -200,9 +201,15 @@ var _ = Describe("the strings package", func() {
 
 		logger.Info("test_info_message")
 
+		logger.OverrideContext(contextDebug)
+		logger.Debug("test_debug_message")
+
 		logMessages, err := parseLogLines(buf.String())
 		Expect(err).To(BeNil())
-		Expect(logMessages[0]["log_level"]).To(Equal("INFO"))
+
+		Expect(logMessages[0]["configured_log_level"]).To(Equal("INFO"))
+		Expect(logMessages[1]["configured_log_level"]).To(Equal("DEBUG"))
+
 	})
 
 	It("Context method returns context", func() {
