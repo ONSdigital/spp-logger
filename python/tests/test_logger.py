@@ -65,7 +65,7 @@ def test_context_can_be_temporarily_overridden(spp_logger, log_stream):
             log_level=logging.DEBUG,
         )
     ):
-    spp_logger.debug("my overridden debug")
+        spp_logger.debug("my overridden debug")
     log_messages = parse_log_lines(log_stream.getvalue())
     assert len(log_messages) == 2
     assert log_messages[0]["log_correlation_id"] == "default_correlation_id"
