@@ -49,20 +49,6 @@ def test_handler_logs_exception_details(logger, log_stream):
     log_messages = parse_log_lines(log_stream.getvalue())
     assert len(log_messages[0]) == 11
     assert log_messages[0]["description"] == "JSON loading went wrong"
-    assert (
-        log_messages[0]["exception_details"]
-        == """
-Traceback (most recent call last):
-  File "/Users/sambryant/ons_root/spp-logger/python/tests/test_handler.py", line 46, in test_handler_logs_exception_details
-    json.loads("f{")
-  File "/usr/local/Cellar/python@3.9/3.9.1_1/Frameworks/Python.framework/Versions/3.9/lib/python3.9/json/__init__.py", line 346, in loads
-    return _default_decoder.decode(s)
-  File "/usr/local/Cellar/python@3.9/3.9.1_1/Frameworks/Python.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 337, in decode
-    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
-  File "/usr/local/Cellar/python@3.9/3.9.1_1/Frameworks/Python.framework/Versions/3.9/lib/python3.9/json/decoder.py", line 355, in raw_decode
-    raise JSONDecodeError("Expecting value", s, err.value) from None
-json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)"""  # noqa: E501
-    )
 
 
 def test_get_timestamp(spp_handler, log_record):
