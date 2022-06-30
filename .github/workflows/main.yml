@@ -35,7 +35,8 @@ jobs:
       - name: Run Unit Test
         run: poetry run pytest
 
-  publish:
+
+  publish-python:
     defaults:
       run:
         working-directory: ./python
@@ -75,3 +76,41 @@ jobs:
             python/dist/*.whl
             python/dist/*.tar.gz
             python/spp-logger.version
+
+  publish-go:
+    permissions:
+      contents: write # for wangyoucao577/go-release-action to upload release assets
+
+    name: Release Go Binary
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, windows/386, windows/amd64, darwin/amd64, darwin/arm64
+        goos: [ linux, windows, darwin ]
+        goarch: [ "386", amd64, arm64 ]
+        exclude:
+          - goarch: "386"
+            goos: darwin
+          - goarch: arm64
+            goos: windows
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set BUILD_TIME env
+        run: echo BUILD_TIME=$(date -u +%Y%m%d-%H%M) >> ${GITHUB_ENV}
+
+      - name: Go Release Binaries spp-logger
+        uses: wangyoucao577/go-release-action@v1.29
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
+          project_path: "./go/spp-logger"
+          binary_name: "spp-logger"
+          asset_name: "spp-logger-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          extra_files: LICENSE README.md
