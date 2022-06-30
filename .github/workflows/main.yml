@@ -107,7 +107,6 @@ jobs:
 
       - name: Go Release Binaries spp-logger
         uses: ajorpheus/go-release-action@504315b5fb0d6c52afde22a6860b7630b49f5333
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
