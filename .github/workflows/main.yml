@@ -86,7 +86,7 @@ jobs:
 
     strategy:
       matrix:
-        # build and publish in parallel: linux/386, linux/amd64, linux/arm64, windows/386, windows/amd64, darwin/amd64, darwin/arm64
+        # build and publish in parallel
         goos: [ linux]
         goarch: [ "386"]
         exclude:
@@ -105,14 +105,11 @@ jobs:
       - name: Go Release Binaries spp-logger
         uses: wangyoucao577/go-release-action@v1.29
         if: startsWith(github.ref, 'refs/tags/')
-        run: |
-          pwd
-          find /
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
-          project_path: "go/spp_logger"
+          project_path: "./go/spp_logger"
           asset_name: "spp-logger-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
           extra_files: LICENSE README.md
