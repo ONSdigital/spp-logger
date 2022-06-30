@@ -102,27 +102,14 @@ jobs:
       - name: Set BUILD_TIME env
         run: echo BUILD_TIME=$(date -u +%Y%m%d-%H%M) >> ${GITHUB_ENV}
 
-      # - name: Go Release Binaries spp-logger
-        # uses: ajorpheus/go-release-action@504315b5fb0d6c52afde22a6860b7630b49f5333
-        # if: startsWith(github.ref, 'refs/tags/')
-        # with:
-          # github_token: ${{ secrets.GITHUB_TOKEN }}
-          # goos: ${{ matrix.goos }}
-          # goarch: ${{ matrix.goarch }}
-          # goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
-          # project_path: "./golang/spp_logger"
-          # asset_name: "spp-logger-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
-          # extra_files: LICENSE README.md
-
-      - name: Run GoReleaser
-        uses: goreleaser/goreleaser-action@v2
+      - name: Go Release Binaries spp-logger
+        uses: ajorpheus/go-release-action@504315b5fb0d6c52afde22a6860b7630b49f5333
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          # either 'goreleaser' (default) or 'goreleaser-pro'
-          distribution: goreleaser
-          version: latest
-          args: release --rm-dist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          workdir: "golang/spp_logger"
-          # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
-          # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
+          project_path: "./golang/spp_logger"
+          asset_name: "spp-logger-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          extra_files: LICENSE README.md
