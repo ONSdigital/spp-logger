@@ -119,7 +119,7 @@ jobs:
           # extra_files: LICENSE README.md
           #
 
-goreleaser:
+  goreleaser:
     runs-on: ubuntu-latest
     steps:
       -
