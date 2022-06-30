@@ -103,7 +103,7 @@ jobs:
         run: echo BUILD_TIME=$(date -u +%Y%m%d-%H%M) >> ${GITHUB_ENV}
 
       - name: Go Release Binaries spp-logger
-        uses: ajorpheus/go-release-action@77bd05e0cf35e08f3a12c9ea24014738083be811
+        uses: ajorpheus/go-release-action@2e6b410cc0f04ae057c9f4478752ae292d514b44
         if: startsWith(github.ref, 'refs/tags/')
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
