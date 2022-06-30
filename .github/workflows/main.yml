@@ -110,7 +110,7 @@ jobs:
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
           goversion: "https://dl.google.com/go/go1.13.1.linux-amd64.tar.gz"
-          project_path: "./go/spp-logger"
+          project_path: "./go/spp_logger"
           binary_name: "spp-logger"
           asset_name: "spp-logger-${{ env.BUILD_TIME }}-${{ matrix.goos }}-${{ matrix.goarch }}"
           extra_files: LICENSE README.md
