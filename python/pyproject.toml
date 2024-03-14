@@ -6,7 +6,7 @@ authors = ["Ian Dash <ian.dash@ons.gov.uk>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pytz = "^2020.4"
+pytz = "^2024.1"
 immutables = "^0.20"
 
 [tool.poetry.dev-dependencies]
