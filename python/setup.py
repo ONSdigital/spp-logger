@@ -2,7 +2,7 @@ import sys
 
 from setuptools import setup
 
-assert sys.version_info >= (3, 6, 0), "spp_logger requires Python 3.6+"
+assert sys.version_info >= (3, 9, 0), "spp_logger requires Python 3.9+"
 from pathlib import Path  # noqa E402
 
 CURRENT_DIR = Path(__file__).parent
@@ -16,7 +16,7 @@ setup(
     packages=["spp_logger"],
     package_dir={"": "."},
     package_data={"spp_logger": ["py.typed"]},
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     install_requires=[
         "pytz>=2020.4",
         "immutables>=0.14",
@@ -27,10 +27,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
