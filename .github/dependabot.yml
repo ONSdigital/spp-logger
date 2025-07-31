@@ -1,0 +1,39 @@
+version: 2
+
+registries:
+  github-credentials:
+    type: git
+    url: https://github.com
+    username: spp@ons.gov.uk
+    password: ${{secrets.PAT}}
+
+updates:
+  - package-ecosystem: "pip"
+    insecure-external-code-execution: allow
+    directories:
+      - "**/*"
+    registries:
+      - github-credentials
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/London"
+    commit-message:
+      prefix: "Poetry Update "
+      include: "scope"
+    groups:
+      major-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+      minor-and-patch-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    ignore:
+      - dependency-name: "pytest"
+        update-types: ["version-update:semver-major"]
