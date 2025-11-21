@@ -64,7 +64,7 @@ jobs:
           poetry-version: '2.2.1'
 
       - name: Remove Dev Dependencies
-        run: poetry install --no-dev
+        run: poetry install
 
       - name: Build
         run: poetry build
