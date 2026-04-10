@@ -8,8 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.13' ]
-        poetry-version: [ '2.2.1' ]
+        python-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        poetry-version: [ '2.3.2' ]
         os: [ ubuntu-latest ]
     defaults:
       run:
@@ -56,12 +56,12 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.13'
+          python-version: '3.14'
 
       - name: Run image
         uses: abatilo/actions-poetry@v4.0.0
         with:
-          poetry-version: '2.2.1'
+          poetry-version: '2.3.2'
 
       - name: Remove Dev Dependencies
         run: poetry install

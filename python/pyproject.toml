@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "spp-logger"
-version = "1.1.1"
+version = "1.2.0"
 description = ""
 authors = []
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = "^3.11"
 pytz = "^2024.1"
 immutables = "^0.21"
 
